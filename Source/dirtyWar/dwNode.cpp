@@ -11,7 +11,6 @@ AdwNode::AdwNode()
 
 	FlipbookComponent = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("FlipbookComponent"));
 
-	// Attach the flipbook component to the root component
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
 	FlipbookComponent->SetupAttachment(RootComponent);
@@ -21,6 +20,7 @@ void AdwNode::setFlipBook()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NODE_TYPE: %d"), this->NODE_ID);
 	if (NODE_TYPE == 1) {
+		//taken straight from ue
 		YourLoadedFlipbook = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/city/city_flipbook.city_flipbook"));
 	}
 	else {

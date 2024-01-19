@@ -18,8 +18,6 @@ AmousePawn::AmousePawn()
 
 	// Set the initial rotation of the spring arm or camera to point down
 	SpringArmComponent->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
-	// Alternatively, if you want to set the camera's rotation
-	// CameraComponent->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 
 	SetActorLocation(FVector(100, 100, 1000));
 
@@ -50,8 +48,7 @@ void AmousePawn::Zoom(float ZoomAmount)
 	// Adjust the spring arm length based on the zoom input
 	SpringArmComponent->TargetArmLength += ZoomAmount * ZoomSpeed;
 
-	// Ensure the spring arm length stays within a specified range if needed
 	float MinZoom = 0.f;
-	float MaxZoom = 1000000.f;
+	float MaxZoom = 50000.f;
 	SpringArmComponent->TargetArmLength = FMath::Clamp(SpringArmComponent->TargetArmLength, MinZoom, MaxZoom);
 }

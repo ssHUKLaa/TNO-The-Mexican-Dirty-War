@@ -1,4 +1,4 @@
 # dirtyWar
-![imageofmap](https://media.discordapp.net/attachments/1191201989900648450/1197391750696808509/image.png?ex=65bb18f7&is=65a8a3f7&hm=47b35a52bdfe602379b43521cb0d096cafdfbcf6537f425ed47d4ebbe1e2fee6&=&format=webp&quality=lossless&width=882&height=741)
+![imageofmap](https://media.discordapp.net/attachments/1191201989900648450/1197787709352185897/image.png?ex=65bc89bb&is=65aa14bb&hm=7969855e057aaf9ac47ffdf81dfdc5a27e0534069867e3eefb44491ab4536b41&=&format=webp&quality=lossless&width=1093&height=741)
 
 Developed with Unreal Engine 5 exclusively in C++ - Currently WIP
