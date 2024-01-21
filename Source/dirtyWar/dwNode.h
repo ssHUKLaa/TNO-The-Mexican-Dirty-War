@@ -6,7 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
+#include <Components/CapsuleComponent.h>
 #include "dwNode.generated.h"
+
 
 UCLASS()
 class DIRTYWAR_API AdwNode : public AActor

@@ -6,7 +6,9 @@
 #include "GameFramework/Pawn.h"
 #include <Camera/CameraComponent.h>
 #include <GameFramework/SpringArmComponent.h>
+#include <Components/CapsuleComponent.h>
 #include "mousePawn.generated.h"
+
 
 
 UCLASS()
@@ -21,6 +23,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	
 
 
 public:	

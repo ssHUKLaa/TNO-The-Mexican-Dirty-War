@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "mousePawn.h"
+#include "reticleActor.h"
+#include "dwNode.h"
 #include "mouseController.generated.h"
+
 
 
 /**
@@ -19,22 +22,28 @@ class DIRTYWAR_API AmouseController : public APlayerController
 public:
 	AmouseController();
 	void PossessPawn(AmousePawn* PawnToPossess);
-	
+	AdwNode* selectedNode;
 	
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
-	void Zoom(float Value);
+	void HandleClick();
 
+	
+
+	void NodeClicked(AdwNode* NodeID);
+
+
+	void Zoom(float Value);
 
 private:
 	AmousePawn* ControlledPawn;
-
-
-
 	void Tick(float DeltaTime) override;
+	AreticleActor* newReticle;
+
+	
 
 	// Functions to handle input
 	

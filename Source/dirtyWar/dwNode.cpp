@@ -47,6 +47,7 @@ void AdwNode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
 }
 
 void AdwNode::SetRootComponent(USceneComponent* NewRootComponent)

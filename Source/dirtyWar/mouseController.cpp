@@ -4,6 +4,8 @@
 #include "mouseController.h"
 #include "mousePawn.h"
 #include "dirtyWarGameModeBase.h"
+#include <PaperSpriteComponent.h>
+#include "reticleActor.h"
 
 
 AmouseController::AmouseController()
@@ -17,7 +19,6 @@ void AmouseController::PossessPawn(AmousePawn* PawnToPossess)
     if (PawnToPossess)
     {
         Possess(PawnToPossess);
-        // Now, this player controller is in control of the specified pawn (MyPawn)
     }
 }
 
@@ -59,8 +60,47 @@ void AmouseController::SetupInputComponent()
 
     Super::SetupInputComponent();
     InputComponent->BindAxis("Zoom", this, &AmouseController::Zoom);
+    InputComponent->BindAction("Click", IE_Pressed, this, &AmouseController::HandleClick);
+}
+void AmouseController::HandleClick()
+{
+    FHitResult HitResult;
+    GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+
+
+    AdwNode* ClickedNode = Cast<AdwNode>(HitResult.GetActor());
+    if (ClickedNode)
+    {
+        selectedNode = ClickedNode;
+        NodeClicked(ClickedNode);
+
+        FVector loc = ClickedNode->GetActorLocation();
+        loc.Z += 1.f;
+
+
+        //reticle anim
+        if (!newReticle)
+        {
+            newReticle = GetWorld()->SpawnActor<AreticleActor>(AreticleActor::StaticClass(), loc, FRotator(0.0f, 0.0f, -90.f));
+            newReticle->SetActorScale3D(FVector(100.f, 100.f, 100.f));
+        }
+        else
+        {
+            newReticle->SetActorLocation(loc);
+        }
+        newReticle->SetActorScale3D(FVector(100.f, 100.f, 100.f));
+        newReticle->StartScaleAnimation();
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("fail"));
+    }
 }
 
+
+void AmouseController::NodeClicked(AdwNode* NodeID)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Clicked on Node with ID: %d"), NodeID->NODE_ID);
+}
 void AmouseController::Zoom(float Value)
 {
     if (ControlledPawn)
@@ -69,6 +109,7 @@ void AmouseController::Zoom(float Value)
         ControlledPawn->Zoom(Value);
     }
 }
+
 
 void AmouseController::Tick(float DeltaTime)
 {
@@ -107,3 +148,5 @@ void AmouseController::Tick(float DeltaTime)
         ControlledPawn->AdjustPawnMovement(ScrollDirection);
     }
 }
+
+

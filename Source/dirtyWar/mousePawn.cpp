@@ -3,6 +3,7 @@
 
 #include "mousePawn.h"
 
+
 // Sets default values
 AmousePawn::AmousePawn()
 {
@@ -20,6 +21,8 @@ AmousePawn::AmousePawn()
 	SpringArmComponent->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 
 	SetActorLocation(FVector(100, 100, 1000));
+
+	
 
 
 }

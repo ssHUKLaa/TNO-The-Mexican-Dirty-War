@@ -9,6 +9,7 @@
 #include "dirtyWarGameModeBase.generated.h"
 
 
+
 /**
  * 
  */
@@ -26,5 +27,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, AdwNode*> IDNodeMap;
 	TArray<AdwNode*> DWNodes;
+	
 	
 };
