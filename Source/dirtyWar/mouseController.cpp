@@ -99,7 +99,7 @@ void AmouseController::HandleClick()
 
 void AmouseController::NodeClicked(AdwNode* NodeID)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Clicked on Node with ID: %d"), NodeID->NODE_ID);
+    UE_LOG(LogTemp, Warning, TEXT("Clicked on Node with Name: %s"), *NodeID->NODE_NAME);
 }
 void AmouseController::Zoom(float Value)
 {
@@ -141,8 +141,6 @@ void AmouseController::Tick(float DeltaTime)
     {
         ScrollDirection.Y = 1.0f; // Scroll down
     }
-
-    // Use ScrollDirection to adjust camera or pawn movement as needed
     if (ControlledPawn)
     {
         ControlledPawn->AdjustPawnMovement(ScrollDirection);

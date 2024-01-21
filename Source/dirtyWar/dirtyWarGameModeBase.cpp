@@ -39,6 +39,9 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
 		float posx = -28770.0f;
 		float posy = -18140.0f;
 		float scale = 9.8f;
+        UMaterialInterface* ConnectionMaterial;
+        ConnectionMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/nodeImages/connections/bar_frame_Mat.bar_frame_Mat"));
+        UStaticMesh* DefaultPlaneMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Plane.Plane"));
 
 		for (FnodeStruct* Row : Rows) {
 			
@@ -48,16 +51,16 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
 			NewNode->NODE_ID = Row->ID;
 			NewNode->NODE_TYPE = Row->NODE_TYPE;
 			NewNode->NODE_CONNECTIONS = Row->NODE_CONNECTIONS;
+            NewNode->NODE_NAME = Row->LOCATION_NAME;
 			NewNode->setFlipBook();
 
 			IDNodeMap.Add(NewNode->NODE_ID, NewNode);
 			DWNodes.Add(NewNode);
 		}
 
-        UMaterialInterface* ConnectionMaterial;
-        ConnectionMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/nodeImages/connections/bar_frame_Mat.bar_frame_Mat"));
+        
         TArray<AdwNode*> finishedNodes;
-        UStaticMesh* DefaultPlaneMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Plane.Plane"));
+        
 
         if (!DefaultPlaneMesh) {
             UE_LOG(LogTemp, Error, TEXT("Failed to load default plane mesh"));

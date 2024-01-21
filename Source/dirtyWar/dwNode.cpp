@@ -3,6 +3,18 @@
 
 #include "dwNode.h"
 
+UPaperFlipbook* AdwNode::SelectRandomOption(TArray<UPaperFlipbook*> flips)
+{
+	// Check if the array is not empty
+	if (flips.Num() > 0)
+	{
+		int32 RandomIndex = FMath::RandRange(0, flips.Num() - 1);
+
+		return flips[RandomIndex];
+	}
+	return nullptr;
+}
+
 // Sets default values
 AdwNode::AdwNode()
 {
@@ -19,22 +31,25 @@ AdwNode::AdwNode()
 void AdwNode::setFlipBook()
 {
 	UE_LOG(LogTemp, Warning, TEXT("NODE_TYPE: %d"), this->NODE_ID);
+	
 	if (NODE_TYPE == 1) {
-		//taken straight from ue
 		YourLoadedFlipbook = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/city/city_flipbook.city_flipbook"));
+		FlipbookComponent->SetFlipbook(YourLoadedFlipbook);
 	}
 	else {
-		YourLoadedFlipbook = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_1/marker_glitchy_flipbook.marker_glitchy_flipbook"));
+		TArray<UPaperFlipbook*> flips;
+		flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_1/marker_glitchy_flipbook.marker_glitchy_flipbook")));
+		flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_2/marker_glitchy_2_flipbook.marker_glitchy_2_flipbook")));
+		flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_3/marker_glitchy_3_flipbook.marker_glitchy_3_flipbook")));
+		flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_4/marker_glitchy_4_flipbook.marker_glitchy_4_flipbook")));
+		FlipbookComponent->SetFlipbook(SelectRandomOption(flips));
 	}
-
-	FlipbookComponent->SetFlipbook(YourLoadedFlipbook);
 	float NewScale = 10.f;
 
 
 	// Set the new scale
 	FlipbookComponent->SetRelativeScale3D(FVector(NewScale, NewScale, NewScale));
 }
-
 // Called when the game starts or when spawned
 void AdwNode::BeginPlay()
 {

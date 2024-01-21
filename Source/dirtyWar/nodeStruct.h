@@ -32,6 +32,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int32> NODE_CONNECTIONS;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString LOCATION_NAME;
+
 	FnodeStruct();
+
+
 
 };

@@ -21,7 +21,7 @@ AreticleActor::AreticleActor()
 	SpriteComponent->SetupAttachment(RootComponent);
 
 	ScaleTimerHandle.Invalidate();
-
+	
 	
 
 }
@@ -32,15 +32,22 @@ void AreticleActor::StartScaleAnimation()
 }
 void AreticleActor::ScaleDown()
 {
-	// Reduce scale gradually over time
-	FVector NewScale = GetActorScale3D() * 0.95f; // You can adjust the scaling factor as needed
+	
+	FVector NewScale = GetActorScale3D() * 0.95f; 
 	SetActorScale3D(NewScale);
 
 	if (NewScale.X < 10.f)
 	{
+		natVariance = 0.f;
 		GetWorldTimerManager().ClearTimer(ScaleTimerHandle);
-		GetWorldTimerManager().SetTimer(ScaleTimerHandle, this, &AreticleActor::StartScaleAnimation, 2.0f, false);
+		GetWorldTimerManager().SetTimer(ScaleTimerHandle, this, &AreticleActor::oscScale, 0.01f, true, 0.0f);
 	}
+}
+void AreticleActor::oscScale() {
+	float val = 2 * FMath::Cos(natVariance) + 8;
+	SetActorScale3D(FVector(val, val, val));
+	natVariance += 0.01f;
+
 }
 
 

@@ -18,6 +18,7 @@ class DIRTYWAR_API AdwNode : public AActor
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Paper2D", meta = (AllowPrivateAccess = "true"))
 	class UPaperFlipbookComponent* FlipbookComponent;
+	UPaperFlipbook* SelectRandomOption(TArray<UPaperFlipbook*> flips);
 
 public:	
 	// Sets default values for this actor's properties
@@ -45,6 +46,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int32> NODE_CONNECTIONS;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString NODE_NAME;
 	void SetRootComponent(USceneComponent* NewRootComponent);
 
 };

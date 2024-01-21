@@ -23,8 +23,10 @@ public:
 	AreticleActor();
 	void StartScaleAnimation();
 	void ScaleDown();
+	void oscScale();
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Paper2D", meta = (AllowPrivateAccess = "true"))
 	UPaperSpriteComponent* SpriteComponent;
+	float natVariance;
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UCurveFloat* ScaleCurve;
