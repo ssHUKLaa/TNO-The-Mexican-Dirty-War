@@ -2,7 +2,7 @@
 
 
 #include "mousePawn.h"
-
+#include "mouseController.h"
 
 // Sets default values
 AmousePawn::AmousePawn()
@@ -23,7 +23,7 @@ AmousePawn::AmousePawn()
 	SetActorLocation(FVector(100, 100, 1000));
 
 	
-
+	
 
 }
 
@@ -31,6 +31,9 @@ AmousePawn::AmousePawn()
 void AmousePawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+
 	
 }
 

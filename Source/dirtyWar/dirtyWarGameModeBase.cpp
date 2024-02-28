@@ -3,6 +3,7 @@
 
 #include "dirtyWarGameModeBase.h"
 #include "mouseController.h"
+#include "dwNodeNameWidget.h"
 #include "nodeStruct.h"
 #include "dwNodeConnection.h"
 
@@ -10,8 +11,11 @@
 
 AdirtyWarGameModeBase::AdirtyWarGameModeBase()
 {
-	PlayerControllerClass = AmouseController::StaticClass();
-	DefaultPawnClass = AmousePawn::StaticClass();
+    PlayerControllerClass = AmouseController::StaticClass();
+    DefaultPawnClass = AmousePawn::StaticClass();
+
+
+
 }
 
 void AdirtyWarGameModeBase::BeginPlay()
@@ -20,6 +24,10 @@ void AdirtyWarGameModeBase::BeginPlay()
 
 	UDataTable* MyDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/mappedNode.mappedNode"));
 	SpawnNodes(MyDataTable);
+
+    
+
+    
 }
 float CalculateConnectionYaw(const FVector& StartLocation, const FVector& EndLocation)
 {

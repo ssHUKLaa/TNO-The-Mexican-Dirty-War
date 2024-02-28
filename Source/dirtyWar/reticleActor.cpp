@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "reticleActor.h"
 #include "PaperSprite.h"
 #include "TimerManager.h"
 #include "PaperSpriteComponent.h"
-#include "reticleActor.h"
+
 
 // Sets default values
 AreticleActor::AreticleActor()

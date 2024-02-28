@@ -7,7 +7,9 @@
 #include "mousePawn.h"
 #include "reticleActor.h"
 #include "dwNode.h"
+#include "dwNodeNameWidget.h"
 #include "mouseController.generated.h"
+
 
 
 
@@ -23,7 +25,13 @@ public:
 	AmouseController();
 	void PossessPawn(AmousePawn* PawnToPossess);
 	AdwNode* selectedNode;
-	
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwNodeNameWidget> playerHUDClass;
+
+	UPROPERTY()
+	class UdwNodeNameWidget* PlayerHUD;
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -37,6 +45,8 @@ protected:
 
 
 	void Zoom(float Value);
+
+	
 
 private:
 	AmousePawn* ControlledPawn;

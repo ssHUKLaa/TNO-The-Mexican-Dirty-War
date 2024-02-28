@@ -30,7 +30,7 @@ AdwNode::AdwNode()
 }
 void AdwNode::setFlipBook()
 {
-	UE_LOG(LogTemp, Warning, TEXT("NODE_TYPE: %d"), this->NODE_ID);
+	//UE_LOG(LogTemp, Warning, TEXT("NODE_TYPE: %d"), this->NODE_ID);
 	
 	if (NODE_TYPE == 1) {
 		YourLoadedFlipbook = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/city/city_flipbook.city_flipbook"));

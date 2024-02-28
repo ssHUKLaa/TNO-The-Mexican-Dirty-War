@@ -27,6 +27,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, AdwNode*> IDNodeMap;
 	TArray<AdwNode*> DWNodes;
+
 	
 	
 };

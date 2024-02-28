@@ -39,6 +39,7 @@ public:
 
 	void Zoom(float ZoomAmount);
 
+	
 private:
 	
 

@@ -4,6 +4,8 @@
 #include "mouseController.h"
 #include "mousePawn.h"
 #include "dirtyWarGameModeBase.h"
+#include "dwNodeNameWidget.h"
+#include "Blueprint/UserWidget.h"
 #include <PaperSpriteComponent.h>
 #include "reticleActor.h"
 
@@ -11,6 +13,21 @@
 AmouseController::AmouseController()
 {
     bShowMouseCursor = true;
+
+    
+    // Ensure the mouse controller is valid
+    if (this) {
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder(TEXT("/Game/dwHUD/dwHUD.dwHUD_C"));
+        if (HUDClassFinder.Succeeded()) {
+            playerHUDClass = HUDClassFinder.Object;
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to find HUD class."));
+        }
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Mouse controller is null."));
+    }
 	
 }
 
@@ -44,12 +61,32 @@ void AmouseController::BeginPlay()
                 Possess(DefaultPawn);
                 UE_LOG(LogTemp, Warning, TEXT("Pawn possessed by controller"));
 
+                if (playerHUDClass) {
+                    PlayerHUD = CreateWidget<UdwNodeNameWidget>(this, playerHUDClass);
+                    if (PlayerHUD) {
+                        PlayerHUD->AddToPlayerScreen();
+                    }
+                    else {
+                        UE_LOG(LogTemp, Warning, TEXT("Failed to create PlayerHUD widget."));
+                    }
+                }
+                else {
+                    UE_LOG(LogTemp, Warning, TEXT("Failed to load HUD class."));
+                }
+                
+
                 // Now, this player controller is in control of the default pawn
             }
         }
+
+
     }
 
     ControlledPawn = Cast<AmousePawn>(GetPawn());
+
+    
+
+    
 }
 void AmousePawn::PossessedBy(AController* NewController)
 {
@@ -72,24 +109,7 @@ void AmouseController::HandleClick()
     if (ClickedNode)
     {
         selectedNode = ClickedNode;
-        NodeClicked(ClickedNode);
-
-        FVector loc = ClickedNode->GetActorLocation();
-        loc.Z += 1.f;
-
-
-        //reticle anim
-        if (!newReticle)
-        {
-            newReticle = GetWorld()->SpawnActor<AreticleActor>(AreticleActor::StaticClass(), loc, FRotator(0.0f, 0.0f, -90.f));
-            newReticle->SetActorScale3D(FVector(100.f, 100.f, 100.f));
-        }
-        else
-        {
-            newReticle->SetActorLocation(loc);
-        }
-        newReticle->SetActorScale3D(FVector(100.f, 100.f, 100.f));
-        newReticle->StartScaleAnimation();
+        NodeClicked(selectedNode);
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("fail"));
@@ -99,12 +119,33 @@ void AmouseController::HandleClick()
 
 void AmouseController::NodeClicked(AdwNode* NodeID)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Clicked on Node with Name: %s"), *NodeID->NODE_NAME);
+    FVector loc = NodeID->GetActorLocation();
+    FString name = *NodeID->NODE_NAME;
+
+    PlayerHUD->SetTextInWidget(FText::FromString(name));
+
+    loc.Z += 1.f;
+
+
+    //reticle anim
+    if (!newReticle)
+    {
+        newReticle = GetWorld()->SpawnActor<AreticleActor>(AreticleActor::StaticClass(), loc, FRotator(0.0f, 0.0f, -90.f));
+        newReticle->SetActorScale3D(FVector(100.f, 100.f, 100.f));
+    }
+    else
+    {
+        newReticle->SetActorLocation(loc);
+    }
+    newReticle->SetActorScale3D(FVector(100.f, 100.f, 100.f));
+    newReticle->StartScaleAnimation();
+
 }
 void AmouseController::Zoom(float Value)
 {
     if (ControlledPawn)
     {
+
         // Pass input to the pawn for handling zoom
         ControlledPawn->Zoom(Value);
     }
