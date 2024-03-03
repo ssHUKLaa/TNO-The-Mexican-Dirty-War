@@ -5,6 +5,7 @@
 #include "mousePawn.h"
 #include "dirtyWarGameModeBase.h"
 #include "dwNodeNameWidget.h"
+#include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
 #include <PaperSpriteComponent.h>
 #include "reticleActor.h"
@@ -17,7 +18,7 @@ AmouseController::AmouseController()
     
     // Ensure the mouse controller is valid
     if (this) {
-        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder(TEXT("/Game/dwHUD/dwHUD.dwHUD_C"));
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder(TEXT("/Game/dwHUD/dwHUD.dwHUD_C")); //i have no idea why this works but cool trick to avoid BPs
         if (HUDClassFinder.Succeeded()) {
             playerHUDClass = HUDClassFinder.Object;
         }
@@ -28,6 +29,8 @@ AmouseController::AmouseController()
     else {
         UE_LOG(LogTemp, Warning, TEXT("Mouse controller is null."));
     }
+
+    
 	
 }
 
@@ -61,6 +64,8 @@ void AmouseController::BeginPlay()
                 Possess(DefaultPawn);
                 UE_LOG(LogTemp, Warning, TEXT("Pawn possessed by controller"));
 
+
+                //assign the widget class to the hud
                 if (playerHUDClass) {
                     PlayerHUD = CreateWidget<UdwNodeNameWidget>(this, playerHUDClass);
                     if (PlayerHUD) {
@@ -74,8 +79,6 @@ void AmouseController::BeginPlay()
                     UE_LOG(LogTemp, Warning, TEXT("Failed to load HUD class."));
                 }
                 
-
-                // Now, this player controller is in control of the default pawn
             }
         }
 
@@ -94,11 +97,18 @@ void AmousePawn::PossessedBy(AController* NewController)
 }
 void AmouseController::SetupInputComponent()
 {
-
     Super::SetupInputComponent();
     InputComponent->BindAxis("Zoom", this, &AmouseController::Zoom);
+    InputComponent->BindAction("SpaceBar", IE_Pressed, this, &AmouseController::BindSpaceBarAction);
+
     InputComponent->BindAction("Click", IE_Pressed, this, &AmouseController::HandleClick);
+    
 }
+void AmouseController::BindSpaceBarAction() {
+    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+    YourGameMode->HandleSpaceBar(PlayerHUD);
+}
+
 void AmouseController::HandleClick()
 {
     FHitResult HitResult;
@@ -122,7 +132,8 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
     FVector loc = NodeID->GetActorLocation();
     FString name = *NodeID->NODE_NAME;
 
-    PlayerHUD->SetTextInWidget(FText::FromString(name));
+    
+    UE_LOG(LogTemp, Warning, TEXT("Clicked on Node with Name: %s"), *NodeID->NODE_NAME);
 
     loc.Z += 1.f;
 

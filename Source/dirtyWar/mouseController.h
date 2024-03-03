@@ -32,10 +32,16 @@ public:
 	UPROPERTY()
 	class UdwNodeNameWidget* PlayerHUD;
 
+	
+
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+
+	void BindSpaceBarAction();
+
+	
 
 	void HandleClick();
 
@@ -52,7 +58,8 @@ private:
 	AmousePawn* ControlledPawn;
 	void Tick(float DeltaTime) override;
 	AreticleActor* newReticle;
-
+	
+	
 	
 
 	// Functions to handle input

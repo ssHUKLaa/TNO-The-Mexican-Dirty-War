@@ -8,12 +8,15 @@
 #include "dwNodeConnection.h"
 
 
-
+int daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 AdirtyWarGameModeBase::AdirtyWarGameModeBase()
 {
     PlayerControllerClass = AmouseController::StaticClass();
     DefaultPawnClass = AmousePawn::StaticClass();
+    //PrimaryActorTick.bCanEverTick = true;
+    //PrimaryActorTick.bStartWithTickEnabled = true;
 
+    GAME_TIMETIMER.Invalidate();
 
 
 }
@@ -24,9 +27,6 @@ void AdirtyWarGameModeBase::BeginPlay()
 
 	UDataTable* MyDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/mappedNode.mappedNode"));
 	SpawnNodes(MyDataTable);
-
-    
-
     
 }
 float CalculateConnectionYaw(const FVector& StartLocation, const FVector& EndLocation)
@@ -37,6 +37,81 @@ float CalculateConnectionYaw(const FVector& StartLocation, const FVector& EndLoc
     float YawRotation = FMath::Atan2(Direction.Y, Direction.X) * (180.0f / PI);
 
     return YawRotation;
+}
+void AdirtyWarGameModeBase::HandleSpaceBar(UdwNodeNameWidget* PlayerHUD) {
+     
+    GAME_UNPAUSED = !GAME_UNPAUSED;
+
+    UE_LOG(LogTemp, Error, TEXT("TEST"));
+    if (GAME_UNPAUSED == true) {
+        float timerTime = 0.0f;
+        switch (GAME_SPEED)
+        {
+        case 1:
+            timerTime = 2.0f;
+            break;
+        case 2:
+            timerTime = 1.0f;
+            break;
+        case 3:
+            timerTime = 0.8f;
+            break;
+        case 4:
+            timerTime = 0.4f;
+            break;
+        case 5:
+            timerTime = FApp::GetDeltaTime();
+            break;
+        default:
+            break;
+        }
+        GetWorldTimerManager().ClearTimer(GAME_TIMETIMER);
+        UE_LOG(LogTemp, Warning, TEXT("Float value: %f"), timerTime);
+
+        GetWorldTimerManager().SetTimer(GAME_TIMETIMER,FTimerDelegate::CreateUObject(this, &AdirtyWarGameModeBase::IterGameTime, PlayerHUD), timerTime, true);
+
+    }
+    else {
+        GetWorldTimerManager().ClearTimer(GAME_TIMETIMER);
+    }
+
+
+}
+void AdirtyWarGameModeBase::IterGameTime(UdwNodeNameWidget* PlayerHUD) {
+
+    // Adjust February days for leap years
+    if ((currentDate.year % 4 == 0 && currentDate.year % 100 != 0) || (currentDate.year % 400 == 0)) {
+        daysInMonth[1] = 29; // Leap year
+    }
+
+    if (currentDate.hour == 23) {
+        currentDate.hour = 0;
+        if (currentDate.day == daysInMonth[currentDate.month] && currentDate.month == 11) { // December 31st
+            currentDate.year++;
+            currentDate.month = 0; // January
+            currentDate.day = 1;
+        }
+        else if (currentDate.day == daysInMonth[currentDate.month]) { // Last day of the month
+            currentDate.month++;
+            currentDate.day = 1;
+        }
+        else {
+            currentDate.day++;
+        }
+    }
+    else {
+        // Just advance the hour
+        currentDate.hour++;
+    }
+
+    FString YearString = FString::FromInt(currentDate.year);
+    FString MonthString = FString::FromInt(currentDate.month);
+    FString DayString = FString::FromInt(currentDate.day);
+    FString HourString = FString::FromInt(currentDate.hour);
+
+    FString dateString = YearString + ":" + MonthString + ":" + DayString + ":" + HourString;
+    PlayerHUD->SetTextInWidget(FText::FromString(dateString));
+
 }
 void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
 {

@@ -2,7 +2,12 @@
 
 
 #include "dwNodeNameWidget.h"
+#include "dirtyWarGameModeBase.h"
 
+void UdwNodeNameWidget::NativeConstruct()
+{
+
+}
 void UdwNodeNameWidget::SetTextInWidget(const FText& NewText)
 {
     if (dwDateTime)
@@ -14,3 +19,9 @@ void UdwNodeNameWidget::SetTextInWidget(const FText& NewText)
         UE_LOG(LogTemp, Warning, TEXT("dwNodeName is null in UdwNodeNameWidget::SetTextInWidget"));
     }
 }
+
+void UdwNodeNameWidget::getNewDate() {
+
+}
+
+
