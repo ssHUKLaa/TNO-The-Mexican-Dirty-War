@@ -51,6 +51,7 @@ private:
 public:
 	AdirtyWarGameModeBase();
 
+
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
 	
@@ -63,7 +64,13 @@ public:
 	TMap<int32, AdwNode*> IDNodeMap;
 	TArray<AdwNode*> DWNodes;
 
+	float calculateGameSpeedConversion();
+
+	void ModifyTime(int modif, UdwNodeNameWidget* PlayerHUD);
+
 	void HandleSpaceBar(UdwNodeNameWidget* PlayerHUD);
+
+	void GameSpeedTimerManager(UdwNodeNameWidget* PlayerHUD);
 
 	void IterGameTime(UdwNodeNameWidget* PlayerHUD);
 

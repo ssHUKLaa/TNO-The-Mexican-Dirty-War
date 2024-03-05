@@ -23,7 +23,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetTextInWidget(const FText& NewText);
 
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void setControllerStill();
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void freeController();
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void getNewDate();
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void ondwSlowDownTimeClicked();
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void ondwSpeedUpTimeClicked();
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwDateTime;

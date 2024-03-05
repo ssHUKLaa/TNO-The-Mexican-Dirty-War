@@ -32,6 +32,8 @@ public:
 	UPROPERTY()
 	class UdwNodeNameWidget* PlayerHUD;
 
+	bool overHUD = false;
+
 	
 
 

@@ -14,6 +14,8 @@
 AmouseController::AmouseController()
 {
     bShowMouseCursor = true;
+    bEnableClickEvents = true;
+    bEnableMouseOverEvents = true;
 
     
     // Ensure the mouse controller is valid
@@ -172,31 +174,33 @@ void AmouseController::Tick(float DeltaTime)
     GetMousePosition(MousePosition.X, MousePosition.Y);
 
     FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
-    const float EdgeMargin = 200.0f;
+    const float EdgeMargin = 100.0f;
 
     FVector2D ScrollDirection = FVector2D::ZeroVector;
+    if (!overHUD) {
+        if (MousePosition.X < EdgeMargin)
+        {
+            ScrollDirection.X = -1.0f; // Scroll left
+        }
+        else if (MousePosition.X > ViewportSize.X - EdgeMargin)
+        {
+            ScrollDirection.X = 1.0f; // Scroll right
+        }
 
-    if (MousePosition.X < EdgeMargin)
-    {
-        ScrollDirection.X = -1.0f; // Scroll left
+        if (MousePosition.Y < EdgeMargin)
+        {
+            ScrollDirection.Y = -1.0f; // Scroll up
+        }
+        else if (MousePosition.Y > ViewportSize.Y - EdgeMargin)
+        {
+            ScrollDirection.Y = 1.0f; // Scroll down
+        }
+        if (ControlledPawn)
+        {
+            ControlledPawn->AdjustPawnMovement(ScrollDirection);
+        }
     }
-    else if (MousePosition.X > ViewportSize.X - EdgeMargin)
-    {
-        ScrollDirection.X = 1.0f; // Scroll right
-    }
-
-    if (MousePosition.Y < EdgeMargin)
-    {
-        ScrollDirection.Y = -1.0f; // Scroll up
-    }
-    else if (MousePosition.Y > ViewportSize.Y - EdgeMargin)
-    {
-        ScrollDirection.Y = 1.0f; // Scroll down
-    }
-    if (ControlledPawn)
-    {
-        ControlledPawn->AdjustPawnMovement(ScrollDirection);
-    }
+        
 }
 
 

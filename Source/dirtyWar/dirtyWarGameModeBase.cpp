@@ -38,44 +38,55 @@ float CalculateConnectionYaw(const FVector& StartLocation, const FVector& EndLoc
 
     return YawRotation;
 }
+float AdirtyWarGameModeBase::calculateGameSpeedConversion() {
+    switch (GAME_SPEED)
+    {
+    case 1:
+        return 2.0f;
+        break;
+    case 2:
+        return 0.5f;
+        break;
+    case 3:
+        return 0.2f;
+        break;
+    case 4:
+        return 0.1f;
+        break;
+    case 5:
+        return FApp::GetDeltaTime();
+        break;
+    default:
+        return 0.f;
+        break;
+    }
+}
+void AdirtyWarGameModeBase::ModifyTime(int modif, UdwNodeNameWidget* PlayerHUD) {
+
+    if (((GAME_SPEED != 5) && (modif > 0)) || ((GAME_SPEED != 1) && (modif < 0))) {
+        GAME_SPEED += modif;
+        UE_LOG(LogTemp, Error, TEXT("%i"), GAME_SPEED);
+        this->GameSpeedTimerManager(PlayerHUD);
+    }
+}
 void AdirtyWarGameModeBase::HandleSpaceBar(UdwNodeNameWidget* PlayerHUD) {
      
     GAME_UNPAUSED = !GAME_UNPAUSED;
-
-    UE_LOG(LogTemp, Error, TEXT("TEST"));
+    this->GameSpeedTimerManager(PlayerHUD);
+}
+void AdirtyWarGameModeBase::GameSpeedTimerManager(UdwNodeNameWidget* PlayerHUD) {
     if (GAME_UNPAUSED == true) {
-        float timerTime = 0.0f;
-        switch (GAME_SPEED)
-        {
-        case 1:
-            timerTime = 2.0f;
-            break;
-        case 2:
-            timerTime = 1.0f;
-            break;
-        case 3:
-            timerTime = 0.8f;
-            break;
-        case 4:
-            timerTime = 0.4f;
-            break;
-        case 5:
-            timerTime = FApp::GetDeltaTime();
-            break;
-        default:
-            break;
-        }
+        float timerTime = AdirtyWarGameModeBase::calculateGameSpeedConversion();
+
         GetWorldTimerManager().ClearTimer(GAME_TIMETIMER);
         UE_LOG(LogTemp, Warning, TEXT("Float value: %f"), timerTime);
 
-        GetWorldTimerManager().SetTimer(GAME_TIMETIMER,FTimerDelegate::CreateUObject(this, &AdirtyWarGameModeBase::IterGameTime, PlayerHUD), timerTime, true);
+        GetWorldTimerManager().SetTimer(GAME_TIMETIMER, FTimerDelegate::CreateUObject(this, &AdirtyWarGameModeBase::IterGameTime, PlayerHUD), timerTime, true);
 
     }
     else {
         GetWorldTimerManager().ClearTimer(GAME_TIMETIMER);
     }
-
-
 }
 void AdirtyWarGameModeBase::IterGameTime(UdwNodeNameWidget* PlayerHUD) {
 
