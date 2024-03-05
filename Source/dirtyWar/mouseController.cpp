@@ -169,37 +169,35 @@ void AmouseController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    // Edge scrolling logic
     FVector2D MousePosition;
     GetMousePosition(MousePosition.X, MousePosition.Y);
 
     FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
-    const float EdgeMargin = 100.0f;
+    const float EdgeMargin = 200.0f;
+    const float MaxScrollSpeed = 1.0f;
 
     FVector2D ScrollDirection = FVector2D::ZeroVector;
     if (!overHUD) {
-        if (MousePosition.X < EdgeMargin)
-        {
-            ScrollDirection.X = -1.0f; // Scroll left
-        }
-        else if (MousePosition.X > ViewportSize.X - EdgeMargin)
-        {
-            ScrollDirection.X = 1.0f; // Scroll right
-        }
+        // Calculate normalized distance from edge of the screen
+        float NormDistanceFromLeftEdge = FMath::Max(0.0f, 1.0f - (MousePosition.X / EdgeMargin));
+        float NormDistanceFromRightEdge = FMath::Max(0.0f, 1.0f - ((ViewportSize.X - MousePosition.X) / EdgeMargin));
+        float NormDistanceFromTopEdge = FMath::Max(0.0f, 1.0f - (MousePosition.Y / EdgeMargin));
+        float NormDistanceFromBottomEdge = FMath::Max(0.0f, 1.0f - ((ViewportSize.Y - MousePosition.Y) / EdgeMargin));
 
-        if (MousePosition.Y < EdgeMargin)
-        {
-            ScrollDirection.Y = -1.0f; // Scroll up
-        }
-        else if (MousePosition.Y > ViewportSize.Y - EdgeMargin)
-        {
-            ScrollDirection.Y = 1.0f; // Scroll down
-        }
+        // Calculate scroll speed using a power function
+        float ScrollSpeedX = MaxScrollSpeed * (NormDistanceFromRightEdge - NormDistanceFromLeftEdge);
+        float ScrollSpeedY = MaxScrollSpeed * (NormDistanceFromBottomEdge - NormDistanceFromTopEdge);
+
+        // Apply scroll speed to scrolling direction
+        ScrollDirection.X = ScrollSpeedX;
+        ScrollDirection.Y = ScrollSpeedY;
+
         if (ControlledPawn)
         {
             ControlledPawn->AdjustPawnMovement(ScrollDirection);
         }
     }
+
         
 }
 

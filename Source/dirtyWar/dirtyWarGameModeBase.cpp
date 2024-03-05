@@ -115,13 +115,7 @@ void AdirtyWarGameModeBase::IterGameTime(UdwNodeNameWidget* PlayerHUD) {
         currentDate.hour++;
     }
 
-    FString YearString = FString::FromInt(currentDate.year);
-    FString MonthString = FString::FromInt(currentDate.month);
-    FString DayString = FString::FromInt(currentDate.day);
-    FString HourString = FString::FromInt(currentDate.hour);
-
-    FString dateString = YearString + ":" + MonthString + ":" + DayString + ":" + HourString;
-    PlayerHUD->SetTextInWidget(FText::FromString(dateString));
+    PlayerHUD->SetTextInWidget(currentDate.year,currentDate.month,currentDate.day,currentDate.hour);
 
 }
 void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)

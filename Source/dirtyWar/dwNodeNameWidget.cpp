@@ -2,9 +2,11 @@
 
 
 #include "dwNodeNameWidget.h"
-#include "dirtyWarGameModeBase.h"
+
 #include "mouseController.h"
 #include "Components/Button.h"
+#include "dirtyWarGameModeBase.h"
+
 
 
 void UdwNodeNameWidget::NativeConstruct()
@@ -18,11 +20,16 @@ void UdwNodeNameWidget::NativeConstruct()
     dwSlowDownTime->OnUnhovered.AddUniqueDynamic(this, &UdwNodeNameWidget::freeController);
 
 }
-void UdwNodeNameWidget::SetTextInWidget(const FText& NewText)
+void UdwNodeNameWidget::SetTextInWidget(const int& year, const int& month, const int& day, const int& hour)
 {
     if (dwDateTime)
     {
-        dwDateTime->SetText(NewText);
+        FString monthStr = monthMap[month];
+        FString dayStr = FString::FromInt(day);
+        FString yearStr = FString::FromInt(year);
+        FString hourStr = FString::FromInt(hour);
+        FText dateText = FText::FromString(hourStr+":00, "+dayStr + " " + monthStr + ", " + yearStr);
+        dwDateTime->SetText(dateText);
     }
     else
     {
