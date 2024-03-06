@@ -7,6 +7,7 @@
 #include <Components/TextBlock.h>
 #include <map>
 #include <Components/Button.h>
+#include <Components/Image.h>
 #include "dwNodeNameWidget.generated.h"
 
 
@@ -43,6 +44,9 @@ public:
 	void ondwSlowDownTimeClicked();
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void ondwSpeedUpTimeClicked();
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* dwTopLeftHeader;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwDateTime;

@@ -19,6 +19,15 @@ void UdwNodeNameWidget::NativeConstruct()
     dwSpeedUpTime->OnUnhovered.AddUniqueDynamic(this, &UdwNodeNameWidget::freeController);
     dwSlowDownTime->OnUnhovered.AddUniqueDynamic(this, &UdwNodeNameWidget::freeController);
 
+    UTexture2D* topLeftTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, TEXT("/Game/dwHUD/topleftborder.topleftborder")));
+    UTexture2D* plusButtonTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, TEXT("/Game/dwHUD/upplus.upplus")));
+    UTexture2D* minusButtonTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), NULL, TEXT("/Game/dwHUD/downminus.downminus")));
+
+    dwTopLeftHeader->SetBrushFromTexture(topLeftTexture);
+
+    dwSpeedUpTime->WidgetStyle.Normal.SetResourceObject(plusButtonTexture);
+    dwSlowDownTime->WidgetStyle.Normal.SetResourceObject(minusButtonTexture);
+
 }
 void UdwNodeNameWidget::SetTextInWidget(const int& year, const int& month, const int& day, const int& hour)
 {
