@@ -6,8 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperFlipbook.h"
+#include "nodeStruct.h"
 #include <Components/CapsuleComponent.h>
 #include "dwNode.generated.h"
+
+
 
 
 UCLASS()
@@ -26,11 +29,14 @@ public:
 
 	void setFlipBook();
 
+	void SetNewFlipbookImage();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+	FFactionType* NODE_FACTION;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -49,5 +55,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString NODE_NAME;
 	void SetRootComponent(USceneComponent* NewRootComponent);
+
+	
+
 
 };

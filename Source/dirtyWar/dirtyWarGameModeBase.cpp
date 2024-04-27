@@ -24,7 +24,15 @@ AdirtyWarGameModeBase::AdirtyWarGameModeBase()
 void AdirtyWarGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+    //SETUP FACTIONS
+    FFactionType govn = {"Government",
+        "WIP",
+        0,
+        0,
+        LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_green/marker_green_flipbook.marker_green_flipbook"))
+    };
 
+    GAME_allFactions.Add(govn);
 	UDataTable* MyDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/mappedNode.mappedNode"));
 	SpawnNodes(MyDataTable);
     
@@ -131,6 +139,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
         ConnectionMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/nodeImages/connections/bar_frame_Mat.bar_frame_Mat"));
         UStaticMesh* DefaultPlaneMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Plane.Plane"));
 
+        //INITIAL NODE SETUP
 		for (FnodeStruct* Row : Rows) {
 			
 			
@@ -157,6 +166,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
         UStaticMeshComponent* ConnectionMeshComponent = NewObject<UStaticMeshComponent>(GetTransientPackage(), UStaticMeshComponent::StaticClass());
         ConnectionMeshComponent->RegisterComponent();
 
+        //NODE CONNECTIONS
         for (AdwNode* node : DWNodes) {
             for (int32 connid : node->NODE_CONNECTIONS) {
                 AdwNode* connedNode;
@@ -197,6 +207,31 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
             finishedNodes.Add(node);
         }
 
+
+        for (AdwNode* node : DWNodes) {
+            if (node->NODE_TYPE == 1) {
+                for (int32 connid : node->NODE_CONNECTIONS) {
+                    AdwNode* connedNode;
+                    AdwNode** ConnedNodePtr = IDNodeMap.Find(connid);
+                    if (ConnedNodePtr) {
+                        connedNode = *ConnedNodePtr;
+                    }
+                    else {
+                        UE_LOG(LogTemp, Error, TEXT("Failed to find connected node with ID %d"), connid);
+                        continue;
+                    }
+
+                    if (connedNode->NODE_TYPE == 0) {
+                        int32 RandomIndex = FMath::RandRange(0, 1);
+                        if (RandomIndex == 1) {
+                            FFactionType govnthingy = GAME_allFactions[0];
+                            connedNode->NODE_FACTION = &govnthingy;
+                            connedNode->SetNewFlipbookImage();
+                        }
+                    }
+                }
+            }
+        }
 	}
 }
 

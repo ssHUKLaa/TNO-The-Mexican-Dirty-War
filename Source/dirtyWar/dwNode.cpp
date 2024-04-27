@@ -1,11 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "dwNode.h"
 
 UPaperFlipbook* AdwNode::SelectRandomOption(TArray<UPaperFlipbook*> flips)
 {
-	// Check if the array is not empty
 	if (flips.Num() > 0)
 	{
 		int32 RandomIndex = FMath::RandRange(0, flips.Num() - 1);
@@ -49,6 +46,15 @@ void AdwNode::setFlipBook()
 
 	// Set the new scale
 	FlipbookComponent->SetRelativeScale3D(FVector(NewScale, NewScale, NewScale));
+}
+void AdwNode::SetNewFlipbookImage()
+{
+	if (NODE_FACTION) {
+		FlipbookComponent->SetFlipbook(NODE_FACTION->nodeImage);
+		float NewScale = 10.f;
+
+		FlipbookComponent->SetRelativeScale3D(FVector(NewScale, NewScale, NewScale));
+	}
 }
 // Called when the game starts or when spawned
 void AdwNode::BeginPlay()

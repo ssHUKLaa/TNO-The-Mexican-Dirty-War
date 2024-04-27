@@ -13,5 +13,7 @@ UCLASS()
 class DIRTYWAR_API AdwNodeConnection : public AStaticMeshActor
 {
 	GENERATED_BODY()
+
+
 	
 };

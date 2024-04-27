@@ -40,6 +40,8 @@ public:
 	{
 	}
 };
+
+
 UCLASS()
 class DIRTYWAR_API AdirtyWarGameModeBase : public AGameModeBase
 {
@@ -80,7 +82,11 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int GAME_startYear = 1965;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int GAME_endYear = 1975;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FFactionType> GAME_allFactions = {};
 };
 
