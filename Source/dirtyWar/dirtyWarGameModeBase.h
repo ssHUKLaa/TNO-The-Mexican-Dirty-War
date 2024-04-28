@@ -62,6 +62,8 @@ public:
 	
 	virtual void SpawnNodes(UDataTable*);
 
+	bool ShouldHappen(int percentage);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, AdwNode*> IDNodeMap;
 	TArray<AdwNode*> DWNodes;
@@ -76,6 +78,8 @@ public:
 
 	void IterGameTime(UdwNodeNameWidget* PlayerHUD);
 
+	FRequiredEquipments setUpRequiredEquipments(FEquipmentType thingy, int32 amountt);
+
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameDate currentDate = { 1965,1,1,0 };
@@ -88,5 +92,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FFactionType> GAME_allFactions = {};
+	TArray<FUnitType> GAME_allUnitTypes = {};
+	TMap<FString, TArray<FEquipmentType>> GAME_allEquipmentTypes;
 };
 
