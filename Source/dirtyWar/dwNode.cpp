@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "dwNode.h"
+#include "nodeStruct.h"
 
 UPaperFlipbook* AdwNode::SelectRandomOption(TArray<UPaperFlipbook*> flips)
 {
@@ -46,6 +47,10 @@ void AdwNode::setFlipBook()
 
 	// Set the new scale
 	FlipbookComponent->SetRelativeScale3D(FVector(NewScale, NewScale, NewScale));
+}
+void AdwNode::addNewUnit(URegimentType* regType)
+{
+	NODE_REGIMENTS.Add(regType);
 }
 void AdwNode::SetNewFlipbookImage()
 {

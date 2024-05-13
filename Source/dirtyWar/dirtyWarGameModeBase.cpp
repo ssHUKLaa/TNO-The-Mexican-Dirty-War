@@ -25,67 +25,61 @@ void AdirtyWarGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
     //SETUP FACTIONS
-    FFactionType govn = {
-        "Government", //name
-        "WIP", //desc
-        0, //affilation 0-govn 1-left 2-right
-        0, //totalunits
-        LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_green/marker_green_flipbook.marker_green_flipbook")) //node image
-    };
-    FFactionType GPG = {
-        "GPG",
-        "WIP",
-        1,
-        0,
-        LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_red/marker_red_Flipbook.marker_red_Flipbook"))
-    };
+    // Create Government faction
+    UFactionType* Govn = NewObject<UFactionType>();
+    Govn->Name = "Government";
+    Govn->Description = "WIP";
+    Govn->Association = 0;
+    Govn->totalUnits = 0;
+    Govn->nodeImage = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_green/marker_green_flipbook.marker_green_flipbook"));
 
-    GAME_allFactions.Add(govn);
+    // Create GPG faction
+    UFactionType* GPG = NewObject<UFactionType>();
+    GPG->Name = "GPG";
+    GPG->Description = "WIP";
+    GPG->Association = 1;
+    GPG->totalUnits = 0;
+    GPG->nodeImage = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_red/marker_red_Flipbook.marker_red_Flipbook"));
+
+    // Add references of the factions
+    GAME_allFactions.Add(Govn);
     GAME_allFactions.Add(GPG);
 
+
     //SETUP EQUIPMENT
-    FEquipmentType infantry_eq_1 = {
-        "Infantry_1",
-        "WIP",
-        1
-    };
+    UEquipmentType* infantry_eq_1 = NewObject<UEquipmentType>();
+    infantry_eq_1->Name = "Infantry Equipment";
+    infantry_eq_1->Description = "WIP";
+    infantry_eq_1->powerMult = 1;
 
-    FEquipmentType support_eq = {
-        "Support Equipment",
-        "WIP",
-        1.15
-    };
+    UEquipmentType* support_eq = NewObject<UEquipmentType>();
+    support_eq->Name = "Support Equipment";
+    support_eq->Description = "WIP";
+    support_eq->powerMult = 1.15;
 
-    FEquipmentType motorized_eq_1 = {
-        "motorized_1",
-        "wip",
-        1.20
-    };
-    TArray<FEquipmentType> inf_eqs = { infantry_eq_1 };
-    TArray<FEquipmentType> support_eqs = { support_eq };
-    TArray<FEquipmentType> mot_eqs = { motorized_eq_1 };
+    UEquipmentType* motorized_eq_1 = NewObject<UEquipmentType>();
+    motorized_eq_1->Name = "motorized_1";
+    motorized_eq_1->Description = "WIP";
+    motorized_eq_1->powerMult = 1.2;
 
-    GAME_allEquipmentTypes.Add("infantry_eq", inf_eqs);
-    GAME_allEquipmentTypes.Add("support_eq", support_eqs);
-    GAME_allEquipmentTypes.Add("motorized_eq", support_eqs);
+    GAME_allEquipmentTypes.Add(infantry_eq_1);
+    GAME_allEquipmentTypes.Add(support_eq);
+    GAME_allEquipmentTypes.Add(motorized_eq_1);
     
     //SETUP UNITS
-    FUnitType soldier_unit = {
-        "Soldier",
-        "WIP",
-        1,
-        100,
-        10,
-        1,
-        0.02,
-        1,
-        {
-            setUpRequiredEquipments(infantry_eq_1,1),
-            setUpRequiredEquipments(support_eq,1),
-        }
-    };
+    UUnitType* soldier_unit = NewObject<UUnitType>();
+    soldier_unit->Name = "Soldier";
+    soldier_unit->Description = "WIP";
+    soldier_unit->techLevel = 1;
+    soldier_unit->healthPoints = 100;
+    soldier_unit->baseTravelableDistance = 10;
+    soldier_unit->baseTacticsLevel = 1;
+    soldier_unit->baseIntelGeneration = 0.02;
+    soldier_unit->basePower = 1;
+    soldier_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1)};
 
     GAME_allUnitTypes.Add(soldier_unit);
+
 
 	UDataTable* MyDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/mappedNode.mappedNode"));
 	SpawnNodes(MyDataTable);
@@ -180,12 +174,13 @@ void AdirtyWarGameModeBase::IterGameTime(UdwNodeNameWidget* PlayerHUD) {
     PlayerHUD->SetTextInWidget(currentDate.year,currentDate.month,currentDate.day,currentDate.hour);
 
 }
-FRequiredEquipments AdirtyWarGameModeBase::setUpRequiredEquipments(FEquipmentType thingy, int32 amountt)
+
+URequiredEquipments* AdirtyWarGameModeBase::setUpRequiredEquipments(UEquipmentType* thingy, int32 amountt)
 {
-    FRequiredEquipments req_eqs = {
-        thingy,
-        amountt
-    };
+    URequiredEquipments* req_eqs = NewObject<URequiredEquipments>();
+    req_eqs->equipment = thingy;
+    req_eqs->amount = amountt;
+        
     return req_eqs;
 }
 void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
@@ -286,9 +281,14 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                     if (connedNode->NODE_TYPE == 0) {
                         int32 RandomIndex = FMath::RandRange(0, 1);
                         if (ShouldHappen(70)) {
-                            FFactionType govnthingy = GAME_allFactions[0];
-                            connedNode->NODE_FACTION = &govnthingy;
+                            UFactionType* govnthingy = GAME_allFactions[0];
+                            connedNode->NODE_FACTION = govnthingy;
                             connedNode->SetNewFlipbookImage();
+                            URegimentType* newReg = NewObject<URegimentType>();
+                            newReg->Name = "test";
+                            newReg->associatedUnit = GAME_allUnitTypes[0];
+                            newReg->unitAmount = 20;
+                            connedNode->addNewUnit(newReg);
                         }
                     }
                 }

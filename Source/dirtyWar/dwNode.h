@@ -29,6 +29,8 @@ public:
 
 	void setFlipBook();
 
+	void addNewUnit(URegimentType* regType);
+
 	void SetNewFlipbookImage();
 
 protected:
@@ -36,7 +38,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	FFactionType* NODE_FACTION;
+	UFactionType* NODE_FACTION;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -56,7 +58,7 @@ public:
 	FString NODE_NAME;
 	void SetRootComponent(USceneComponent* NewRootComponent);
 
-	
+	TArray<URegimentType*> NODE_REGIMENTS;
 
 
 };

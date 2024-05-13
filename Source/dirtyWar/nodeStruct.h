@@ -13,8 +13,8 @@
 /**
  * 
  */
-USTRUCT(BlueprintType)
-struct FFactionType
+UCLASS(BlueprintType)
+class DIRTYWAR_API UFactionType : public UObject
 {
 	GENERATED_BODY()
 
@@ -33,15 +33,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* nodeImage;
-	FFactionType() : Name(""), Description(""), Association(-1), totalUnits(0), nodeImage() {}
+	UFactionType() : Name(""), Description(""), Association(-1), totalUnits(0), nodeImage() {}
 
-	FFactionType(FString curName, FString curDesc, int32 curAssoc, int32 curUnits, UPaperFlipbook* curFlip)
+	UFactionType(FString curName, FString curDesc, int32 curAssoc, int32 curUnits, UPaperFlipbook* curFlip)
 		: Name(curName), Description(curDesc), Association(curAssoc), totalUnits(curUnits), nodeImage(curFlip)
 	{
 	}
 };
-USTRUCT(BlueprintType)
-struct FEquipmentType
+UCLASS(BlueprintType)
+class DIRTYWAR_API UEquipmentType : public UObject
 {
 	GENERATED_BODY()
 
@@ -55,31 +55,31 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double powerMult;
 
-	FEquipmentType() : Name(""), Description(""), powerMult(0) { }
+	UEquipmentType() : Name(""), Description(""), powerMult(0) { }
 
-	FEquipmentType(FString curName, FString curDesc,double curMult)
+	UEquipmentType(FString curName, FString curDesc,double curMult)
 		: Name(curName), Description(curDesc), powerMult(curMult)
 	{
 	}
 
 };
-USTRUCT(BlueprintType)
-struct FRequiredEquipments
+UCLASS(BlueprintType)
+class DIRTYWAR_API URequiredEquipments : public UObject
 {
 	GENERATED_BODY()
 public:
-	FEquipmentType equipment;
+	UEquipmentType* equipment;
 	int32 amount;
 
-	FRequiredEquipments() : equipment(), amount(0) { }
+	URequiredEquipments() : equipment(), amount(0) { }
 
-	FRequiredEquipments(FEquipmentType curEquipment, int32 curAmount)
+	URequiredEquipments(UEquipmentType* curEquipment, int32 curAmount)
 		: equipment(curEquipment), amount(curAmount)
 	{
 	}
 };
-USTRUCT(BlueprintType)
-struct FUnitType
+UCLASS(BlueprintType)
+class DIRTYWAR_API UUnitType : public UObject
 {
 	GENERATED_BODY()
 
@@ -109,15 +109,39 @@ public:
 	int32 basePower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FRequiredEquipments> requiredEquipment;
+	TArray<URequiredEquipments*> requiredEquipment;
 
-	FUnitType() : Name(""), Description(""), techLevel(0), healthPoints(0), baseTravelableDistance(0), baseTacticsLevel(0), baseIntelGeneration(0), basePower(0) {}
+	UUnitType() : Name(""), Description(""), techLevel(0), healthPoints(0), baseTravelableDistance(0), baseTacticsLevel(0), baseIntelGeneration(0), basePower(0) {}
 
-	FUnitType(FString curName, FString curDesc, int32 curTech, int32 curHealth, int32 curTravel, int32 curTactic, double curIntel, int32 curPower, TArray<FRequiredEquipments> curReq)
+	UUnitType(FString curName, FString curDesc, int32 curTech, int32 curHealth, int32 curTravel, int32 curTactic, double curIntel, int32 curPower, TArray<URequiredEquipments*> curReq)
 		: Name(curName), Description(curDesc), techLevel(curTech), healthPoints(curHealth), baseTravelableDistance(curTravel), baseTacticsLevel(curTactic), baseIntelGeneration(curIntel), basePower(curPower), requiredEquipment(curReq)
 	{
 	}
 };
+
+UCLASS(BlueprintType)
+class DIRTYWAR_API URegimentType : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UUnitType* associatedUnit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 unitAmount;
+
+	URegimentType() : Name(""), associatedUnit(nullptr), unitAmount(0) {}
+
+	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount)
+		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount)
+	{
+	}
+};
+
 USTRUCT(BlueprintType)
 struct DIRTYWAR_API FnodeStruct : public FTableRowBase
 {

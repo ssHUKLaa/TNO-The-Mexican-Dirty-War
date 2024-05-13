@@ -136,6 +136,7 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
 
     
     UE_LOG(LogTemp, Warning, TEXT("Clicked on Node with Name: %s"), *NodeID->NODE_NAME);
+    UE_LOG(LogTemp, Warning, TEXT("Node has %d Regiments"), NodeID->NODE_REGIMENTS.Num());
 
     loc.Z += 1.f;
 

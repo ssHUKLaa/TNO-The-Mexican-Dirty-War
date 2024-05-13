@@ -78,7 +78,7 @@ public:
 
 	void IterGameTime(UdwNodeNameWidget* PlayerHUD);
 
-	FRequiredEquipments setUpRequiredEquipments(FEquipmentType thingy, int32 amountt);
+	URequiredEquipments* setUpRequiredEquipments(UEquipmentType* thingy, int32 amountt);
 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -91,8 +91,11 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FFactionType> GAME_allFactions = {};
-	TArray<FUnitType> GAME_allUnitTypes = {};
-	TMap<FString, TArray<FEquipmentType>> GAME_allEquipmentTypes;
+	TArray<UFactionType*> GAME_allFactions = {};
+	TArray<UUnitType*> GAME_allUnitTypes = {};
+	TArray<UEquipmentType*> GAME_allEquipmentTypes = {};
+
+	TMap<UUnitType*, AdwNode*> GAME_allUnits;
+
 };
 
