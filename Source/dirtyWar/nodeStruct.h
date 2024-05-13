@@ -132,12 +132,15 @@ public:
 	UUnitType* associatedUnit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UFactionType* associatedFaction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 unitAmount;
 
-	URegimentType() : Name(""), associatedUnit(nullptr), unitAmount(0) {}
+	URegimentType() : Name(""), associatedUnit(nullptr), unitAmount(0), associatedFaction(nullptr) {}
 
-	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount)
-		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount)
+	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount, UFactionType* curFac)
+		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount), associatedFaction(curFac)
 	{
 	}
 };

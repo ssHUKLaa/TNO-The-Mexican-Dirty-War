@@ -288,6 +288,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                             newReg->Name = "test";
                             newReg->associatedUnit = GAME_allUnitTypes[0];
                             newReg->unitAmount = 20;
+                            newReg->associatedFaction = GAME_allFactions[0];
                             connedNode->addNewUnit(newReg);
                         }
                     }
