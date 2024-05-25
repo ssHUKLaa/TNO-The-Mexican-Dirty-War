@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "dwNode.h"
-#include "dwNodeNameWidget.h"
+#include "HUD/dwNodeNameWidget.h"
 #include "Engine/DataTable.h"
 #include "dirtyWarGameModeBase.generated.h"
 
@@ -94,6 +94,8 @@ public:
 	TArray<UFactionType*> GAME_allFactions = {};
 	TArray<UUnitType*> GAME_allUnitTypes = {};
 	TArray<UEquipmentType*> GAME_allEquipmentTypes = {};
+
+	TMap<UEquipmentType*, int32> GAME_currentEquipment = {};
 
 	TMap<UUnitType*, AdwNode*> GAME_allUnits;
 

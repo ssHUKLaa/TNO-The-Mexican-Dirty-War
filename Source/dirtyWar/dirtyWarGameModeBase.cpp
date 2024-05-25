@@ -3,7 +3,7 @@
 
 #include "dirtyWarGameModeBase.h"
 #include "mouseController.h"
-#include "dwNodeNameWidget.h"
+#include "HUD/dwNodeNameWidget.h"
 #include "nodeStruct.h"
 #include "dwNodeConnection.h"
 
@@ -17,7 +17,6 @@ AdirtyWarGameModeBase::AdirtyWarGameModeBase()
     //PrimaryActorTick.bStartWithTickEnabled = true;
 
     GAME_TIMETIMER.Invalidate();
-
 
 }
 
@@ -65,6 +64,10 @@ void AdirtyWarGameModeBase::BeginPlay()
     GAME_allEquipmentTypes.Add(infantry_eq_1);
     GAME_allEquipmentTypes.Add(support_eq);
     GAME_allEquipmentTypes.Add(motorized_eq_1);
+
+    GAME_currentEquipment.Add(infantry_eq_1,100);
+    GAME_currentEquipment.Add(support_eq, 100);
+    GAME_currentEquipment.Add(motorized_eq_1, 100);
     
     //SETUP UNITS
     UUnitType* soldier_unit = NewObject<UUnitType>();

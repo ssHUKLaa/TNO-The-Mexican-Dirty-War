@@ -4,7 +4,7 @@
 #include "mouseController.h"
 #include "mousePawn.h"
 #include "dirtyWarGameModeBase.h"
-#include "dwNodeNameWidget.h"
+#include "HUD/dwNodeNameWidget.h"
 #include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
 #include <PaperSpriteComponent.h>
@@ -21,8 +21,16 @@ AmouseController::AmouseController()
     // Ensure the mouse controller is valid
     if (this) {
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder(TEXT("/Game/dwHUD/dwHUD.dwHUD_C")); //i have no idea why this works but cool trick to avoid BPs
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder2(TEXT("/Game/dwHUD/dwWhenNodeClickedHUD.dwWhenNodeClickedHUD_C"));
         if (HUDClassFinder.Succeeded()) {
             playerHUDClass = HUDClassFinder.Object;
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to find HUD class."));
+        }
+
+        if (HUDClassFinder2.Succeeded()) {
+            NodeClickedHUDClass = HUDClassFinder2.Object;
         }
         else {
             UE_LOG(LogTemp, Warning, TEXT("Failed to find HUD class."));
@@ -72,6 +80,7 @@ void AmouseController::BeginPlay()
                     PlayerHUD = CreateWidget<UdwNodeNameWidget>(this, playerHUDClass);
                     if (PlayerHUD) {
                         PlayerHUD->AddToPlayerScreen();
+
                     }
                     else {
                         UE_LOG(LogTemp, Warning, TEXT("Failed to create PlayerHUD widget."));
@@ -88,10 +97,6 @@ void AmouseController::BeginPlay()
     }
 
     ControlledPawn = Cast<AmousePawn>(GetPawn());
-
-    
-
-    
 }
 void AmousePawn::PossessedBy(AController* NewController)
 {
@@ -120,8 +125,10 @@ void AmouseController::HandleClick()
     AdwNode* ClickedNode = Cast<AdwNode>(HitResult.GetActor());
     if (ClickedNode)
     {
-        selectedNode = ClickedNode;
-        NodeClicked(selectedNode);
+        if (selectedNode!= ClickedNode) {
+            selectedNode = ClickedNode;
+            NodeClicked(selectedNode);
+        }
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("fail"));
@@ -135,12 +142,25 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
     FString name = *NodeID->NODE_NAME;
 
     
+    
     UE_LOG(LogTemp, Warning, TEXT("Clicked on Node with Name: %s"), *NodeID->NODE_NAME);
     UE_LOG(LogTemp, Warning, TEXT("Node has %d Regiments"), NodeID->NODE_REGIMENTS.Num());
 
     loc.Z += 1.f;
 
+    if (NodeClickedHUD){
+        
+        NodeClickedHUD->slideOutAnim();
+        NodeClickedHUD = nullptr;
+    }
 
+    if (NodeClickedHUDClass) {
+        NodeClickedHUD = CreateWidget<UdwOnNodeClickWidget>(this, NodeClickedHUDClass);
+        if (NodeClickedHUD) {
+            NodeClickedHUD->AddToPlayerScreen();
+            NodeClickedHUD->SetNodeText(name);
+        }
+    }
     //reticle anim
     if (!newReticle)
     {

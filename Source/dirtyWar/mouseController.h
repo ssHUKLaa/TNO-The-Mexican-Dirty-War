@@ -7,7 +7,8 @@
 #include "mousePawn.h"
 #include "reticleActor.h"
 #include "dwNode.h"
-#include "dwNodeNameWidget.h"
+#include "HUD/dwNodeNameWidget.h"
+#include "HUD/dwOnNodeClickWidget.h"
 #include "mouseController.generated.h"
 
 
@@ -32,10 +33,14 @@ public:
 	UPROPERTY()
 	class UdwNodeNameWidget* PlayerHUD;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwOnNodeClickWidget> NodeClickedHUDClass;
+
+	UPROPERTY()
+	class UdwOnNodeClickWidget* NodeClickedHUD;
 	bool overHUD = false;
 
 	
-
 
 protected:
 	virtual void BeginPlay() override;
