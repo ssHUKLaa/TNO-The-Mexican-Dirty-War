@@ -140,6 +140,13 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
 {
     FVector loc = NodeID->GetActorLocation();
     FString name = *NodeID->NODE_NAME;
+    FString controller;
+    if (NodeID->NODE_FACTION != nullptr) {
+        controller = NodeID->NODE_FACTION->Name;
+    }
+    else {
+        controller = "People";
+    }
 
     
     
@@ -158,7 +165,7 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
         NodeClickedHUD = CreateWidget<UdwOnNodeClickWidget>(this, NodeClickedHUDClass);
         if (NodeClickedHUD) {
             NodeClickedHUD->AddToPlayerScreen();
-            NodeClickedHUD->SetNodeText(name);
+            NodeClickedHUD->SetNodeText(name,controller);
         }
     }
     //reticle anim

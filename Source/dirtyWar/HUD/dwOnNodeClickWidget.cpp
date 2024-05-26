@@ -1,13 +1,40 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Animation/WidgetAnimation.h" 
+#include "../mouseController.h"
 #include "dwOnNodeClickWidget.h"
 
 
 
+FReply UdwOnNodeClickWidget::NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    FReply Reply = Super::NativeOnMouseMove(InGeometry, InMouseEvent);
+
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    if (NodeClickedBorder)
+    {
+        if (NodeClickedBorder->IsHovered())
+        {
+            PlayerController->overHUD = true;
+        }
+    }
+
+    return Reply;
+}
+
+void UdwOnNodeClickWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+    Super::NativeOnMouseLeave(InMouseEvent);
+
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    PlayerController->overHUD = false;
+}
+
 void UdwOnNodeClickWidget::NativeConstruct()
 {
     Super::NativeConstruct();
+
+    dwNodeExitButton->OnClicked.AddUniqueDynamic(this, &UdwOnNodeClickWidget::slideOutAnim);
 
     if (SlideIN)
     {
@@ -35,7 +62,9 @@ void UdwOnNodeClickWidget::slideOutAnim()
 
 
 
-void UdwOnNodeClickWidget::SetNodeText(FString name)
+void UdwOnNodeClickWidget::SetNodeText(FString name, FString control)
 {
 	dwNodeText->SetText(FText::FromString(name));
+
+    dwNodeControlledText->SetText(FText::FromString(control));
 }

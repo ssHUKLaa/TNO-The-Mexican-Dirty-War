@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include <Components/TextBlock.h>
 #include "Blueprint/UserWidget.h"
+#include <Components/Button.h>
 #include "Components/Border.h"
 #include "dwOnNodeClickWidget.generated.h"
 
@@ -18,20 +19,33 @@ class DIRTYWAR_API UdwOnNodeClickWidget : public UUserWidget
 	GENERATED_BODY()
 	
 
+protected:
+	
 
 public:
 	virtual void NativeConstruct() override;
+
+	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	void NativeOnMouseLeave(const FPointerEvent& InMouseEvent);
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void slideOutAnim();
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
-	void SetNodeText(FString name);
+	void SetNodeText(FString name, FString control);
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwNodeText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* dwNodeControlledText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBorder* NodeClickedBorder;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* dwNodeExitButton;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* SlideIN; 

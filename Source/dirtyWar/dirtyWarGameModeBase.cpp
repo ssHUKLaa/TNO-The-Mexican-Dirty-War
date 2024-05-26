@@ -266,10 +266,11 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
             }
             finishedNodes.Add(node);
         }
-
-
+        UFactionType* govnthingy = GAME_allFactions[0];
+        //NODE FACTION INIT
         for (AdwNode* node : DWNodes) {
             if (node->NODE_TYPE == 1) {
+                node->NODE_FACTION = govnthingy;
                 for (int32 connid : node->NODE_CONNECTIONS) {
                     AdwNode* connedNode;
                     AdwNode** ConnedNodePtr = IDNodeMap.Find(connid);
@@ -284,7 +285,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                     if (connedNode->NODE_TYPE == 0) {
                         int32 RandomIndex = FMath::RandRange(0, 1);
                         if (ShouldHappen(70)) {
-                            UFactionType* govnthingy = GAME_allFactions[0];
+                            
                             connedNode->NODE_FACTION = govnthingy;
                             connedNode->SetNewFlipbookImage();
                             URegimentType* newReg = NewObject<URegimentType>();
