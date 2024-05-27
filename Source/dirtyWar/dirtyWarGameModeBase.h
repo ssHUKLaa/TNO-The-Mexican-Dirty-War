@@ -53,6 +53,8 @@ private:
 public:
 	AdirtyWarGameModeBase();
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TArray<FSlateBrush> ButtonBrushes;
 
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	

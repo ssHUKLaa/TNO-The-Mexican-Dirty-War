@@ -6,8 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include <Components/TextBlock.h>
 #include <map>
+#include "Components/Border.h"
 #include <Components/Button.h>
 #include <Components/Image.h>
+#include "Slate/SlateBrushAsset.h"
+#include "Styling/SlateBrush.h"
 #include "dwNodeNameWidget.generated.h"
 
 
@@ -28,7 +31,8 @@ private:
 	{9, "September"}, {10, "October"}, {11, "November"}, {12, "December"}
 	};
 public:
-
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void toggleBottomLeftBorderState();
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetTextInWidget(const int& year, const int& month, const int& day, const int& hour);
 
@@ -57,9 +61,22 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* dwSlowDownTime;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* dwBtmLftBtn;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UBorder* dwBottomLeftBorder;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* slideOut;
+
+	
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	bool bottomleftGUIState = false;
 
 	virtual void NativeConstruct() override;
+	
 protected:
 	
 	

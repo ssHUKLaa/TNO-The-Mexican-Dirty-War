@@ -18,6 +18,25 @@ AdirtyWarGameModeBase::AdirtyWarGameModeBase()
 
     GAME_TIMETIMER.Invalidate();
 
+    ConstructorHelpers::FObjectFinder<UTexture2D> Texture1Obj(TEXT("/Game/dwHUD/close0.close0"));
+    ConstructorHelpers::FObjectFinder<UTexture2D> Texture2Obj(TEXT("/Game/dwHUD/close1.close1"));
+    UTexture2D* Texture1 = Texture1Obj.Object;
+    UTexture2D* Texture2 = Texture2Obj.Object;
+
+    if (Texture1 && Texture2)
+    {
+        FSlateBrush Brush1;
+        Brush1.SetResourceObject(Texture1);
+        Brush1.ImageSize = FVector2D(Texture1->GetSizeX(), Texture1->GetSizeY());
+
+        FSlateBrush Brush2;
+        Brush2.SetResourceObject(Texture2);
+        Brush2.ImageSize = FVector2D(Texture2->GetSizeX(), Texture2->GetSizeY());
+
+        ButtonBrushes.Add(Brush1);
+        ButtonBrushes.Add(Brush2);
+    }
+
 }
 
 void AdirtyWarGameModeBase::BeginPlay()

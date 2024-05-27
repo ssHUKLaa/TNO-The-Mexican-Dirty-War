@@ -1,16 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "dwNodeNameWidget.h"
-
 #include "../mouseController.h"
 #include "Components/Button.h"
 #include "../dirtyWarGameModeBase.h"
+#include "dwNodeNameWidget.h"
 
 
 
 void UdwNodeNameWidget::NativeConstruct()
 {
+
+    Super::NativeConstruct();
+
     dwSpeedUpTime->OnClicked.AddUniqueDynamic(this, &UdwNodeNameWidget::ondwSpeedUpTimeClicked);
     dwSlowDownTime->OnClicked.AddUniqueDynamic(this, &UdwNodeNameWidget::ondwSlowDownTimeClicked);
 
@@ -19,8 +21,55 @@ void UdwNodeNameWidget::NativeConstruct()
     dwSpeedUpTime->OnUnhovered.AddUniqueDynamic(this, &UdwNodeNameWidget::freeController);
     dwSlowDownTime->OnUnhovered.AddUniqueDynamic(this, &UdwNodeNameWidget::freeController);
 
+    
+
+    if (dwBtmLftBtn)
+    {
+        dwBtmLftBtn->OnClicked.AddUniqueDynamic(this, &UdwNodeNameWidget::toggleBottomLeftBorderState);
+        UE_LOG(LogTemp, Log, TEXT("dwBtmLftBtn is properly bound"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("dwBtmLftBtn is null"));
+    }
+
+    this->toggleBottomLeftBorderState();
 
 }
+
+void UdwNodeNameWidget::toggleBottomLeftBorderState()
+{
+    UE_LOG(LogTemp, Warning, TEXT("toggleBottomLeftBorderState clicked"));
+    if (bottomleftGUIState) {
+        if (slideOut)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("tes"));
+            PlayAnimationForward(slideOut);
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("no slideout"));
+        }
+    }
+    else {
+        if (slideOut)
+        {
+            PlayAnimationReverse(slideOut);
+            
+        }
+    }
+    bottomleftGUIState = !bottomleftGUIState;
+    FButtonStyle ButtonStyle = dwBtmLftBtn->WidgetStyle;
+    int intbool = bottomleftGUIState ? 1 : 0;
+
+    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+    TArray<FSlateBrush> btnBrush = YourGameMode->ButtonBrushes;
+    ButtonStyle.SetNormal(btnBrush[intbool]);
+    ButtonStyle.SetHovered(btnBrush[intbool]);
+    ButtonStyle.SetPressed(btnBrush[intbool]);
+
+    dwBtmLftBtn->SetStyle(ButtonStyle);
+}
+
 void UdwNodeNameWidget::SetTextInWidget(const int& year, const int& month, const int& day, const int& hour)
 {
     if (dwDateTime)
