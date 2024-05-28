@@ -7,6 +7,30 @@
 #include "dwNodeNameWidget.h"
 
 
+FReply UdwNodeNameWidget::NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    FReply Reply = Super::NativeOnMouseMove(InGeometry, InMouseEvent);
+
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    if (dwBottomLeftBorder)
+    {
+        if (dwBottomLeftBorder->IsHovered())
+        {
+            PlayerController->overHUD = true;
+        }
+    }
+
+    return Reply;
+}
+
+void UdwNodeNameWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+    Super::NativeOnMouseLeave(InMouseEvent);
+
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    PlayerController->overHUD = false;
+}
+
 
 void UdwNodeNameWidget::NativeConstruct()
 {

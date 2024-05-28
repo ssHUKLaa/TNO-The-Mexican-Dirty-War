@@ -75,6 +75,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	bool bottomleftGUIState = false;
 
+	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	void NativeOnMouseLeave(const FPointerEvent& InMouseEvent);
+
 	virtual void NativeConstruct() override;
 	
 protected:
