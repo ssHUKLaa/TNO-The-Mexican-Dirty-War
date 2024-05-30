@@ -10,8 +10,12 @@
 #include <Components/Button.h>
 #include <Components/Image.h>
 #include "Slate/SlateBrushAsset.h"
+#include "dwGovnInfoHUD.h"
 #include "Styling/SlateBrush.h"
+#include "dwWpnsMnuHUD.h"
+#include "dwRecruitUnitsHUD.h"
 #include "dwNodeNameWidget.generated.h"
+
 
 
 
@@ -49,6 +53,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void ondwSpeedUpTimeClicked();
 
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void openGovnHUDTab();
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void openWeaponsHUDTab();
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void openUnitsHUDTab();
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void openClearAllTopTabs(AmouseController* PlayerController);
+
+	UPROPERTY()
+	UdwGovnInfoHUD* GovnInfoHUD;
+
+	UPROPERTY()
+	UdwWpnsMnuHUD* WpnsInfoHUD;
+
+	UPROPERTY()
+	UdwRecruitUnitsHUD* RecruitUnitHUD;
+
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UImage* dwTopLeftHeader;
 
@@ -70,7 +96,14 @@ public:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* slideOut;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* dwTopLeftGovnBtn;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* dwTopLeftMnufBtn;
 	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* dwTopleftRecruitBtn;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	bool bottomleftGUIState = false;

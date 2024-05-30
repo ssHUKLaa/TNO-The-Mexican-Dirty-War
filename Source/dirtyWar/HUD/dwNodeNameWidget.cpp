@@ -45,6 +45,9 @@ void UdwNodeNameWidget::NativeConstruct()
     dwSpeedUpTime->OnUnhovered.AddUniqueDynamic(this, &UdwNodeNameWidget::freeController);
     dwSlowDownTime->OnUnhovered.AddUniqueDynamic(this, &UdwNodeNameWidget::freeController);
 
+    dwTopLeftGovnBtn->OnClicked.AddUniqueDynamic(this, &UdwNodeNameWidget::openGovnHUDTab);
+    dwTopLeftMnufBtn->OnClicked.AddUniqueDynamic(this, &UdwNodeNameWidget::openWeaponsHUDTab);
+    dwTopleftRecruitBtn->OnClicked.AddUniqueDynamic(this, &UdwNodeNameWidget::openUnitsHUDTab);
     
 
     if (dwBtmLftBtn)
@@ -131,6 +134,76 @@ void UdwNodeNameWidget::ondwSpeedUpTimeClicked()
 {
     AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
     YourGameMode->ModifyTime(1,this);
+}
+
+void UdwNodeNameWidget::openGovnHUDTab()
+{
+
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    if (GovnInfoHUD == nullptr) {
+        this->openClearAllTopTabs(PlayerController);
+        GovnInfoHUD = CreateWidget<UdwGovnInfoHUD>(PlayerController, PlayerController->GovnInfoHUDClass);
+        if (GovnInfoHUD) {
+            GovnInfoHUD->AddToPlayerScreen();
+        }
+    }
+    else if(GovnInfoHUD != nullptr) {
+        GovnInfoHUD->RemoveFromParent();
+        GovnInfoHUD = nullptr;
+    }
+    
+}
+
+void UdwNodeNameWidget::openWeaponsHUDTab()
+{
+
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    if (WpnsInfoHUD == nullptr) {
+        this->openClearAllTopTabs(PlayerController);
+        WpnsInfoHUD = CreateWidget<UdwWpnsMnuHUD>(PlayerController, PlayerController->WpnsInfoHUDClass);
+        if (WpnsInfoHUD) {
+            WpnsInfoHUD->AddToPlayerScreen();
+        }
+    }
+    else if (WpnsInfoHUD != nullptr) {
+        WpnsInfoHUD->RemoveFromParent();
+        WpnsInfoHUD = nullptr;
+    }
+}
+
+void UdwNodeNameWidget::openUnitsHUDTab()
+{
+
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    if (RecruitUnitHUD == nullptr) {
+        this->openClearAllTopTabs(PlayerController);
+        RecruitUnitHUD = CreateWidget<UdwRecruitUnitsHUD>(PlayerController, PlayerController->RecruitUnitHUDClass);
+        if (RecruitUnitHUD) {
+            RecruitUnitHUD->AddToPlayerScreen();
+        }
+    }
+    else if (RecruitUnitHUD != nullptr) {
+        RecruitUnitHUD->RemoveFromParent();
+        RecruitUnitHUD = nullptr;
+    }
+
+}
+
+void UdwNodeNameWidget::openClearAllTopTabs(AmouseController* PlayerController)
+{
+    if (WpnsInfoHUD != nullptr) {
+        WpnsInfoHUD->RemoveFromParent();
+        WpnsInfoHUD = nullptr;
+    }
+    if (GovnInfoHUD != nullptr) {
+        GovnInfoHUD->RemoveFromParent();
+        GovnInfoHUD = nullptr;
+    }
+    if (RecruitUnitHUD != nullptr) {
+        RecruitUnitHUD->RemoveFromParent();
+        RecruitUnitHUD = nullptr;
+    }
+  
 }
 
 

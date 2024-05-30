@@ -22,6 +22,10 @@ AmouseController::AmouseController()
     if (this) {
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder(TEXT("/Game/dwHUD/dwHUD.dwHUD_C")); //i have no idea why this works but cool trick to avoid BPs
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder2(TEXT("/Game/dwHUD/dwWhenNodeClickedHUD.dwWhenNodeClickedHUD_C"));
+
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder3(TEXT("/Game/dwHUD/dwGovnDispHUD.dwGovnDispHUD_C"));
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder4(TEXT("/Game/dwHUD/dwManageWeaponsHUD.dwManageWeaponsHUD_C"));
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder5(TEXT("/Game/dwHUD/dwRecruitUnitHUD.dwRecruitUnitHUD_C"));
         if (HUDClassFinder.Succeeded()) {
             playerHUDClass = HUDClassFinder.Object;
         }
@@ -34,6 +38,16 @@ AmouseController::AmouseController()
         }
         else {
             UE_LOG(LogTemp, Warning, TEXT("Failed to find HUD class."));
+        }
+
+        if (HUDClassFinder3.Succeeded()) {
+            GovnInfoHUDClass = HUDClassFinder3.Object;
+        }
+        if (HUDClassFinder4.Succeeded()) {
+            WpnsInfoHUDClass = HUDClassFinder4.Object;
+        }
+        if (HUDClassFinder5.Succeeded()) {
+            RecruitUnitHUDClass = HUDClassFinder5.Object;
         }
     }
     else {

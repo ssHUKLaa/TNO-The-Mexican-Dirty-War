@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UdwNodeNameWidget> playerHUDClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwWpnsMnuHUD> WpnsInfoHUDClass;
+
 	UPROPERTY()
 	class UdwNodeNameWidget* PlayerHUD;
 
@@ -40,6 +43,11 @@ public:
 	class UdwOnNodeClickWidget* NodeClickedHUD;
 	bool overHUD = false;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwGovnInfoHUD> GovnInfoHUDClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwRecruitUnitsHUD> RecruitUnitHUDClass;
 	
 
 protected:
