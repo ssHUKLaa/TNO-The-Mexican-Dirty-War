@@ -312,6 +312,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                             newReg->associatedUnit = GAME_allUnitTypes[0];
                             newReg->unitAmount = 20;
                             newReg->associatedFaction = GAME_allFactions[0];
+                            newReg->PercentOrganized = 100;
                             connedNode->addNewUnit(newReg);
                         }
                     }

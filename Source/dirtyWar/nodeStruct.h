@@ -137,10 +137,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 unitAmount;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 PercentOrganized;
+
 	URegimentType() : Name(""), associatedUnit(nullptr), unitAmount(0), associatedFaction(nullptr) {}
 
-	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount, UFactionType* curFac)
-		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount), associatedFaction(curFac)
+	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount, UFactionType* curFac, int32 curOrg)
+		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount), associatedFaction(curFac), PercentOrganized(curOrg)
 	{
 	}
 };

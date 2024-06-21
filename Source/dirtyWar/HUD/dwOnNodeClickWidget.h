@@ -7,6 +7,8 @@
 #include "Blueprint/UserWidget.h"
 #include <Components/Button.h>
 #include "Components/Border.h"
+#include "dwNodeNameWidget.h"
+#include "Components/Scrollbox.h"
 #include "dwOnNodeClickWidget.generated.h"
 
 
@@ -35,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetNodeText(FString name, FString control);
 
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void SetNodeUnits(TArray<URegimentType*> nodeUnits, AmouseController* ctrl);
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwNodeText;
 
@@ -49,4 +54,7 @@ public:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* SlideIN; 
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UScrollBox* dwNodeUnitList;
 };

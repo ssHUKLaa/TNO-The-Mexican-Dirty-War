@@ -68,3 +68,15 @@ void UdwOnNodeClickWidget::SetNodeText(FString name, FString control)
 
     dwNodeControlledText->SetText(FText::FromString(control));
 }
+
+void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, AmouseController* ctrl)
+{
+    
+    for (URegimentType* node : nodeUntis) {
+        UdwNodeUnitEntry* nodeEntry = CreateWidget<UdwNodeUnitEntry>(ctrl, ctrl->UnitEntryHUDClass);
+        nodeEntry->setUnitNameText(node->Name,node->associatedUnit->Name);
+        dwNodeUnitList->AddChild(nodeEntry);
+    }
+    UE_LOG(LogTemp, Warning, TEXT("length: %d"), nodeUntis.Num());
+
+}

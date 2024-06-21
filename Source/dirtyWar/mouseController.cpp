@@ -26,6 +26,8 @@ AmouseController::AmouseController()
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder3(TEXT("/Game/dwHUD/dwGovnDispHUD.dwGovnDispHUD_C"));
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder4(TEXT("/Game/dwHUD/dwManageWeaponsHUD.dwManageWeaponsHUD_C"));
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder5(TEXT("/Game/dwHUD/dwRecruitUnitHUD.dwRecruitUnitHUD_C"));
+
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder6(TEXT("/Game/dwHUD/dwNodeUnitEntryHUD.dwNodeUnitEntryHUD_C"));
         if (HUDClassFinder.Succeeded()) {
             playerHUDClass = HUDClassFinder.Object;
         }
@@ -48,6 +50,9 @@ AmouseController::AmouseController()
         }
         if (HUDClassFinder5.Succeeded()) {
             RecruitUnitHUDClass = HUDClassFinder5.Object;
+        }
+        if (HUDClassFinder6.Succeeded()) {
+            UnitEntryHUDClass = HUDClassFinder6.Object;
         }
     }
     else {
@@ -180,6 +185,7 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
         if (NodeClickedHUD) {
             NodeClickedHUD->AddToPlayerScreen();
             NodeClickedHUD->SetNodeText(name,controller);
+            NodeClickedHUD->SetNodeUnits(NodeID->NODE_REGIMENTS, this);
         }
     }
     //reticle anim

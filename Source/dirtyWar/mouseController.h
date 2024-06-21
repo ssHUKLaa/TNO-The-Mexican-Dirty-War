@@ -9,6 +9,7 @@
 #include "dwNode.h"
 #include "HUD/dwNodeNameWidget.h"
 #include "HUD/dwOnNodeClickWidget.h"
+#include "HUD/dwNodeUnitEntry.h"
 #include "mouseController.generated.h"
 
 
@@ -48,6 +49,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UdwRecruitUnitsHUD> RecruitUnitHUDClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwNodeUnitEntry> UnitEntryHUDClass;
 	
 
 protected:
