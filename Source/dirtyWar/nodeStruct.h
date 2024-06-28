@@ -140,10 +140,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 PercentOrganized;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 nodesMovable;
+
 	URegimentType() : Name(""), associatedUnit(nullptr), unitAmount(0), associatedFaction(nullptr) {}
 
-	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount, UFactionType* curFac, int32 curOrg)
-		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount), associatedFaction(curFac), PercentOrganized(curOrg)
+	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount, UFactionType* curFac, int32 curOrg, int32 curnodemov)
+		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount), associatedFaction(curFac), PercentOrganized(curOrg), nodesMovable(curnodemov)
 	{
 	}
 };

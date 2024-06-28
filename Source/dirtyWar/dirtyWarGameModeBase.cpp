@@ -313,7 +313,17 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                             newReg->unitAmount = 20;
                             newReg->associatedFaction = GAME_allFactions[0];
                             newReg->PercentOrganized = 100;
+                            newReg->nodesMovable = GAME_allUnitTypes[0]->baseTravelableDistance;
                             connedNode->addNewUnit(newReg);
+
+                            URegimentType* newReg2 = NewObject<URegimentType>();
+                            newReg2->Name = "test";
+                            newReg2->associatedUnit = GAME_allUnitTypes[0];
+                            newReg2->unitAmount = 20;
+                            newReg2->associatedFaction = GAME_allFactions[0];
+                            newReg2->PercentOrganized = 100;
+                            newReg2->nodesMovable = GAME_allUnitTypes[0]->baseTravelableDistance;
+                            connedNode->addNewUnit(newReg2);
                         }
                     }
                 }

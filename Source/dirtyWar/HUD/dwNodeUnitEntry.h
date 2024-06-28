@@ -21,7 +21,7 @@ class DIRTYWAR_API UdwNodeUnitEntry : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
-	void setUnitNameText(FString nameText, FString unitType);
+	void setUnitNameText(FString nameText, FString unitType, int32 regSize, int32 orgPerc);
 
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -29,6 +29,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwUnitTypeName;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* dwUnitEntryRegimentText;
+
 
 
 
