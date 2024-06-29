@@ -56,6 +56,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TArray<FSlateBrush> ButtonBrushes;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TArray<FSlateBrush> frameBrushes;
+
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
 	
@@ -99,7 +102,6 @@ public:
 
 	TMap<UEquipmentType*, int32> GAME_currentEquipment = {};
 
-	TMap<UUnitType*, AdwNode*> GAME_allUnits;
 
 };
 

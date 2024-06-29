@@ -37,6 +37,25 @@ AdirtyWarGameModeBase::AdirtyWarGameModeBase()
         ButtonBrushes.Add(Brush2);
     }
 
+    ConstructorHelpers::FObjectFinder<UTexture2D> UnitFrame1Obj(TEXT("/Game/dwHUD/unitentrything.unitentrything"));
+    ConstructorHelpers::FObjectFinder<UTexture2D> UnitFrame2Obj(TEXT("/Game/dwHUD/unitframesel.unitframesel"));
+
+    UTexture2D* fT1 = UnitFrame1Obj.Object;
+    UTexture2D* fT2 = UnitFrame2Obj.Object;
+
+    if (fT1 && fT2) {
+        
+        FSlateBrush Brush1;
+        Brush1.SetResourceObject(fT1);
+        Brush1.ImageSize = FVector2D(fT1->GetSizeX(), fT1->GetSizeY());
+
+        FSlateBrush Brush2;
+        Brush2.SetResourceObject(fT2);
+        Brush2.ImageSize = FVector2D(fT2->GetSizeX(), fT2->GetSizeY());
+
+        frameBrushes.Add(Brush1);
+        frameBrushes.Add(Brush2);
+    }
 }
 
 void AdirtyWarGameModeBase::BeginPlay()

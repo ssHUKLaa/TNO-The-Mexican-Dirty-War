@@ -74,8 +74,11 @@ void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, Amouse
     
     for (URegimentType* node : nodeUntis) {
         UdwNodeUnitEntry* nodeEntry = CreateWidget<UdwNodeUnitEntry>(ctrl, ctrl->UnitEntryHUDClass);
+        nodeEntry->associatedRegiment = node;
         nodeEntry->setUnitNameText(node->Name,node->associatedUnit->Name, node->unitAmount,node->PercentOrganized);
+        nodeEntry->setTravelableProgBar();
         dwNodeUnitList->AddChild(nodeEntry);
+
     }
     UE_LOG(LogTemp, Warning, TEXT("length: %d"), nodeUntis.Num());
 

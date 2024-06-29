@@ -10,6 +10,7 @@
 #include "HUD/dwNodeNameWidget.h"
 #include "HUD/dwOnNodeClickWidget.h"
 #include "HUD/dwNodeUnitEntry.h"
+#include "nodeStruct.h"
 #include "mouseController.generated.h"
 
 
@@ -52,6 +53,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UdwNodeUnitEntry> UnitEntryHUDClass;
+
+	UPROPERTY(EditAnywhere)
+	TMap<URegimentType*,AdwNode*> player_AllUnits;
 	
 
 protected:
@@ -80,7 +84,6 @@ private:
 	
 	
 	
-
-	// Functions to handle input
+	
 	
 };
