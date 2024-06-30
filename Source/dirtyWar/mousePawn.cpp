@@ -41,11 +41,19 @@ void AmousePawn::AdjustPawnMovement(const FVector2D& ScrollDirection)
 {
 
 	float CurrentArmLength = SpringArmComponent->TargetArmLength;
-
 	float ScrollSpeed = (CurrentArmLength > 0) ? 60.0f * FMath::Loge(1.0f + CurrentArmLength / 100.0f) : 60.0f;
-    // Adjust pawn movement based on edge scrolling
-    FVector AdjustedMovement = FVector(ScrollDirection.X, ScrollDirection.Y, 0.0f) * ScrollSpeed;
-    AddActorWorldOffset(AdjustedMovement, true);
+
+	FVector AdjustedMovement = FVector(ScrollDirection.X, ScrollDirection.Y, 0.0f) * ScrollSpeed;
+	AddActorWorldOffset(AdjustedMovement, true);
+
+	FVector CurrentPosition = GetActorLocation();
+	FVector ClampedPosition = CurrentPosition;
+
+	ClampedPosition.X = FMath::Clamp(CurrentPosition.X, -26700.0, 29000.0);
+	ClampedPosition.Y = FMath::Clamp(CurrentPosition.Y, -18330.0, 18400.0);
+	ClampedPosition.Z = FMath::Clamp(CurrentPosition.Z, 100.0, 30000.0);
+
+	SetActorLocation(ClampedPosition);
 }
 
 void AmousePawn::Zoom(float ZoomAmount)

@@ -65,3 +65,20 @@ void UdwNodeUnitEntry::onUnitEntryUnHovered()
 	
 }
 
+//when reclicking on a node, we need to persist each unit entry with its game state.
+void UdwNodeUnitEntry::persistsEntryStatus()
+{
+	AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+	TArray<FSlateBrush> imgBrush = YourGameMode->frameBrushes;
+
+	
+	AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+	if (PlayerController->player_AllUnits.Contains(associatedRegiment)) {
+		dwUnitSelOutline->SetBrush(imgBrush[1]);
+		entrySelected = true;
+	}
+	else {
+		dwUnitSelOutline->SetBrush(imgBrush[0]);
+		entrySelected = false;
+	}
+}

@@ -77,7 +77,9 @@ void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, Amouse
         nodeEntry->associatedRegiment = node;
         nodeEntry->setUnitNameText(node->Name,node->associatedUnit->Name, node->unitAmount,node->PercentOrganized);
         nodeEntry->setTravelableProgBar();
+        nodeEntry->persistsEntryStatus();
         dwNodeUnitList->AddChild(nodeEntry);
+        
 
     }
     UE_LOG(LogTemp, Warning, TEXT("length: %d"), nodeUntis.Num());

@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void onUnitEntryUnHovered();
 
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void persistsEntryStatus();
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwUnitEntryNameText;
 
