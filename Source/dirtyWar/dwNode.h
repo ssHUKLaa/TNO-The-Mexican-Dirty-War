@@ -58,7 +58,11 @@ public:
 	FString NODE_NAME;
 	void SetRootComponent(USceneComponent* NewRootComponent);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<URegimentType*> NODE_REGIMENTS;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 NODE_INTEL;
 
 
 };

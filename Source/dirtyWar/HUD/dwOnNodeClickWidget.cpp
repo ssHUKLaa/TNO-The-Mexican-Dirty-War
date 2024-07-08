@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "dwOnNodeClickWidget.h"
 #include "Animation/WidgetAnimation.h" 
 #include "../mouseController.h"
-#include "dwOnNodeClickWidget.h"
+
 
 
 
@@ -62,11 +62,16 @@ void UdwOnNodeClickWidget::slideOutAnim()
 
 
 
-void UdwOnNodeClickWidget::SetNodeText(FString name, FString control)
+void UdwOnNodeClickWidget::SetNodeText(FString name)
 {
 	dwNodeText->SetText(FText::FromString(name));
 
-    dwNodeControlledText->SetText(FText::FromString(control));
+}
+
+void UdwOnNodeClickWidget::SetNodeIntelProg(int32 intel)
+{
+    dwNodeIntelProgbar->SetPercent(static_cast<float>(intel) / 100.0f);
+    UE_LOG(LogTemp, Warning, TEXT("percent %f"), static_cast<float>(intel) / 100.0f);
 }
 
 void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, AmouseController* ctrl)
@@ -78,6 +83,7 @@ void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, Amouse
         nodeEntry->setUnitNameText(node->Name,node->associatedUnit->Name, node->unitAmount,node->PercentOrganized);
         nodeEntry->setTravelableProgBar();
         nodeEntry->persistsEntryStatus();
+
         dwNodeUnitList->AddChild(nodeEntry);
         
 

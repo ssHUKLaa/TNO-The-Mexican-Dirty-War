@@ -49,6 +49,7 @@ class DIRTYWAR_API AdirtyWarGameModeBase : public AGameModeBase
 
 private:
 	FTimerHandle GAME_TIMETIMER;
+	int DaysPassed = 0;
 
 public:
 	AdirtyWarGameModeBase();
@@ -62,27 +63,28 @@ public:
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
 	
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	virtual void BeginPlay() override;
-	
-	virtual void SpawnNodes(UDataTable*);
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void SpawnNodes(UDataTable* nodeTable);
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	bool ShouldHappen(int percentage);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, AdwNode*> IDNodeMap;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AdwNode*> DWNodes;
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	float calculateGameSpeedConversion();
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void ModifyTime(int modif, UdwNodeNameWidget* PlayerHUD);
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void HandleSpaceBar(UdwNodeNameWidget* PlayerHUD);
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void GameSpeedTimerManager(UdwNodeNameWidget* PlayerHUD);
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void IterGameTime(UdwNodeNameWidget* PlayerHUD);
-
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	URequiredEquipments* setUpRequiredEquipments(UEquipmentType* thingy, int32 amountt);
 
 	
@@ -96,11 +98,31 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UFactionType*> GAME_allFactions = {};
+	TMap<FString,UFactionType*> GAME_allFactions = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UUnitType*> GAME_allUnitTypes = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UEquipmentType*> GAME_allEquipmentTypes = {};
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<UEquipmentType*, int32> GAME_currentEquipment = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float GAME_BASEINTELDECAY = 2.f;
+
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void GAME_ONHOURLY();
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void GAME_ONDAILY();
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void GAME_ONWEEKLY();
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void GAME_ONMONTHLY();
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void GAME_ONYEARLY();
+
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void GenerateIntel();
+
 
 
 };

@@ -55,7 +55,18 @@ void AdwNode::addNewUnit(URegimentType* regType)
 void AdwNode::SetNewFlipbookImage()
 {
 	if (NODE_FACTION) {
-		FlipbookComponent->SetFlipbook(NODE_FACTION->nodeImage);
+		if (NODE_FACTION->Name == "None") {
+			TArray<UPaperFlipbook*> flips;
+			flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_1/marker_glitchy_flipbook.marker_glitchy_flipbook")));
+			flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_2/marker_glitchy_2_flipbook.marker_glitchy_2_flipbook")));
+			flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_3/marker_glitchy_3_flipbook.marker_glitchy_3_flipbook")));
+			flips.Add(LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_glitchy_4/marker_glitchy_4_flipbook.marker_glitchy_4_flipbook")));
+			FlipbookComponent->SetFlipbook(SelectRandomOption(flips));
+		}
+		else {
+			FlipbookComponent->SetFlipbook(NODE_FACTION->nodeImage);
+		}
+		
 		float NewScale = 10.f;
 
 		FlipbookComponent->SetRelativeScale3D(FVector(NewScale, NewScale, NewScale));

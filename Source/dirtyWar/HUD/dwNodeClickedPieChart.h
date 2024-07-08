@@ -61,4 +61,12 @@ private:
     int32 HoveredSegmentIndex = INDEX_NONE;
 
     int32 GetSegmentIndexAtPosition(const FVector2D& Position, const FGeometry& MyGeometry) const;
+
+    UPROPERTY(EditAnywhere, Category = "PieChart")
+    TSubclassOf<UUserWidget> TooltipWidgetClass;
+
+    UPROPERTY()
+    UUserWidget* TooltipWidgetInstance;
+
+    void UpdateTooltip(const FVector2D MousePosition, const FGeometry& MyGeometry);
 };

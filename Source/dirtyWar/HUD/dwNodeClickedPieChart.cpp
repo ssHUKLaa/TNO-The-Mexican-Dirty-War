@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "dwNodeClickedPieChart.h"
 #include "Slate/SlateBrushAsset.h"
 #include "SlateOptMacros.h"
 #include "Engine/Texture2D.h"
 #include "Rendering/DrawElements.h"
-#include "dwNodeClickedPieChart.h"
+#include <Blueprint/WidgetLayoutLibrary.h>
+
 
 
 int32 UdwNodeClickedPieChart::NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
@@ -97,8 +98,8 @@ FReply UdwNodeClickedPieChart::NativeOnMouseMove(const FGeometry& MyGeometry, co
 
         Invalidate(EInvalidateWidget::LayoutAndVolatility);
     }
-
     
+    UpdateTooltip(MousePosition, MyGeometry);
 
     return FReply::Handled();
 }
@@ -111,6 +112,12 @@ void UdwNodeClickedPieChart::NativeOnMouseLeave(const FPointerEvent& MouseEvent)
         HoveredSegmentIndex = INDEX_NONE;
 
         Invalidate(EInvalidateWidget::LayoutAndVolatility);
+
+        if (TooltipWidgetInstance)
+        {
+            TooltipWidgetInstance->RemoveFromParent();
+            TooltipWidgetInstance = nullptr;
+        }
     }
 
     Super::NativeOnMouseLeave(MouseEvent);
@@ -143,4 +150,48 @@ int32 UdwNodeClickedPieChart::GetSegmentIndexAtPosition(const FVector2D& Positio
     }
 
     return INDEX_NONE;
+}
+
+void UdwNodeClickedPieChart::UpdateTooltip(const FVector2D MousePosition, const FGeometry& MyGeometry)
+{
+    if (HoveredSegmentIndex != INDEX_NONE)
+    {
+        if (!TooltipWidgetInstance && TooltipWidgetClass)
+        {
+            TooltipWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), TooltipWidgetClass);
+        }
+
+        if (TooltipWidgetInstance)
+        {
+            TooltipWidgetInstance->AddToViewport();
+
+            // Set the text or other data in the tooltip widget
+            /*
+            UTextBlock* TextBlock = Cast<UTextBlock>(TooltipWidgetInstance->GetWidgetFromName(TEXT("TooltipText")));
+            if (TextBlock)
+            {
+                TextBlock->SetText(FText::Format(NSLOCTEXT("PieChart", "SegmentTooltip", "Segment: {0}\nPercentage: {1}%"),
+                    Segments[HoveredSegmentIndex].SegmentName,
+                    FText::AsNumber(Segments[HoveredSegmentIndex].Percentage)));
+            }
+            */
+            // Set the position of the tooltip widget
+            
+            UE_LOG(LogTemp, Log, TEXT("Mouse Position: X=%f, Y=%f"), MousePosition.X, MousePosition.Y);
+            FVector2D Center = FVector2D(
+                MyGeometry.GetAbsolutePosition().X + 0.5f * MyGeometry.GetAbsoluteSize().X,
+                MyGeometry.GetAbsolutePosition().Y - 0.5f * MyGeometry.GetAbsoluteSize().Y
+            );
+            // Set the position of the tooltip widget
+            TooltipWidgetInstance->SetPositionInViewport(MousePosition);
+        }
+    }
+    else
+    {
+        if (TooltipWidgetInstance)
+        {
+            TooltipWidgetInstance->RemoveFromParent();
+            TooltipWidgetInstance = nullptr;
+        }
+    }
 }

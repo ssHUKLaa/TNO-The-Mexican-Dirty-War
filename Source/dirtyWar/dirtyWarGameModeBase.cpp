@@ -63,6 +63,15 @@ void AdirtyWarGameModeBase::BeginPlay()
 	Super::BeginPlay();
     //SETUP FACTIONS
     // Create Government faction
+
+    UFactionType* None = NewObject<UFactionType>();
+    None->Name = "None";
+    None->Description = "WIP";
+    None->Association = 3;
+    None->totalUnits = 0;
+    None->nodeImage = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_green/marker_green_flipbook.marker_green_flipbook")); //redundant
+
+
     UFactionType* Govn = NewObject<UFactionType>();
     Govn->Name = "Government";
     Govn->Description = "WIP";
@@ -79,8 +88,9 @@ void AdirtyWarGameModeBase::BeginPlay()
     GPG->nodeImage = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_red/marker_red_Flipbook.marker_red_Flipbook"));
 
     // Add references of the factions
-    GAME_allFactions.Add(Govn);
-    GAME_allFactions.Add(GPG);
+    GAME_allFactions.Add("Govn",Govn);
+    GAME_allFactions.Add("GPG",GPG);
+    GAME_allFactions.Add("None",None);
 
 
     //SETUP EQUIPMENT
@@ -115,7 +125,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     soldier_unit->healthPoints = 100;
     soldier_unit->baseTravelableDistance = 10;
     soldier_unit->baseTacticsLevel = 1;
-    soldier_unit->baseIntelGeneration = 0.02;
+    soldier_unit->baseIntelGeneration = 0.2;
     soldier_unit->basePower = 1;
     soldier_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1)};
 
@@ -191,30 +201,44 @@ void AdirtyWarGameModeBase::IterGameTime(UdwNodeNameWidget* PlayerHUD) {
     if ((currentDate.year % 4 == 0 && currentDate.year % 100 != 0) || (currentDate.year % 400 == 0)) {
         daysInMonth[1] = 29; // Leap year
     }
+    else {
+        daysInMonth[1] = 28; // Not a leap year
+    }
 
     if (currentDate.hour == 23) {
         currentDate.hour = 0;
+
         if (currentDate.day == daysInMonth[currentDate.month] && currentDate.month == 11) { // December 31st
             currentDate.year++;
+            GAME_ONYEARLY();
             currentDate.month = 0; // January
             currentDate.day = 1;
         }
         else if (currentDate.day == daysInMonth[currentDate.month]) { // Last day of the month
             currentDate.month++;
+            GAME_ONMONTHLY();
             currentDate.day = 1;
         }
         else {
             currentDate.day++;
+            GAME_ONDAILY();
+
+            DaysPassed++;
+            if (DaysPassed == 7) {
+                GAME_ONWEEKLY();
+                DaysPassed = 0;
+            }
         }
     }
     else {
         // Just advance the hour
         currentDate.hour++;
+        GAME_ONHOURLY();
     }
 
-    PlayerHUD->SetTextInWidget(currentDate.year,currentDate.month,currentDate.day,currentDate.hour);
-
+    PlayerHUD->SetTextInWidget(currentDate.year, currentDate.month, currentDate.day, currentDate.hour);
 }
+
 
 URequiredEquipments* AdirtyWarGameModeBase::setUpRequiredEquipments(UEquipmentType* thingy, int32 amountt)
 {
@@ -224,6 +248,7 @@ URequiredEquipments* AdirtyWarGameModeBase::setUpRequiredEquipments(UEquipmentTy
         
     return req_eqs;
 }
+
 void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
 {
 	if (!nodeTable) return;
@@ -246,6 +271,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
             
 			NewNode->NODE_CONNECTIONS = Row->NODE_CONNECTIONS;
             NewNode->NODE_NAME = Row->LOCATION_NAME;
+            NewNode->NODE_INTEL = FMath::RoundToInt(FMath::FRand()*100);
             
 			NewNode->setFlipBook();
 
@@ -265,7 +291,42 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
         ConnectionMeshComponent->RegisterComponent();
 
         //NODE CONNECTIONS
+        UFactionType** govnthingy = GAME_allFactions.Find("Govn");
+        UFactionType** nonethindy = GAME_allFactions.Find("None");
         for (AdwNode* node : DWNodes) {
+            node->NODE_FACTION = *nonethindy; //all initially none
+            if (node->NODE_TYPE == 1) {
+                
+                node->NODE_FACTION = *govnthingy;
+                for (int32 connid : node->NODE_CONNECTIONS) {
+                    AdwNode* connedNode;
+                    AdwNode** ConnedNodePtr = IDNodeMap.Find(connid);
+                    if (ConnedNodePtr) {
+                        connedNode = *ConnedNodePtr;
+                    }
+                    else {
+                        UE_LOG(LogTemp, Error, TEXT("Failed to find connected node with ID %d"), connid);
+                        continue;
+                    }
+
+                    if (connedNode->NODE_TYPE == 0) {
+                        int32 RandomIndex = FMath::RandRange(0, 1);
+                        if (ShouldHappen(70)) {
+
+                            connedNode->NODE_FACTION = *govnthingy;
+                            connedNode->SetNewFlipbookImage();
+                            URegimentType* newReg = NewObject<URegimentType>();
+                            newReg->Name = "test";
+                            newReg->associatedUnit = GAME_allUnitTypes[0];
+                            newReg->unitAmount = 20;
+                            newReg->associatedFaction = *govnthingy;
+                            newReg->PercentOrganized = 100;
+                            newReg->nodesMovable = GAME_allUnitTypes[0]->baseTravelableDistance;
+                            connedNode->addNewUnit(newReg);
+                        }
+                    }
+                }
+            }
             for (int32 connid : node->NODE_CONNECTIONS) {
                 AdwNode* connedNode;
                 AdwNode** ConnedNodePtr = IDNodeMap.Find(connid);
@@ -304,53 +365,77 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
             }
             finishedNodes.Add(node);
         }
-        UFactionType* govnthingy = GAME_allFactions[0];
-        //NODE FACTION INIT
-        for (AdwNode* node : DWNodes) {
-            if (node->NODE_TYPE == 1) {
-                node->NODE_FACTION = govnthingy;
-                for (int32 connid : node->NODE_CONNECTIONS) {
-                    AdwNode* connedNode;
-                    AdwNode** ConnedNodePtr = IDNodeMap.Find(connid);
-                    if (ConnedNodePtr) {
-                        connedNode = *ConnedNodePtr;
-                    }
-                    else {
-                        UE_LOG(LogTemp, Error, TEXT("Failed to find connected node with ID %d"), connid);
-                        continue;
-                    }
-
-                    if (connedNode->NODE_TYPE == 0) {
-                        int32 RandomIndex = FMath::RandRange(0, 1);
-                        if (ShouldHappen(70)) {
-                            
-                            connedNode->NODE_FACTION = govnthingy;
-                            connedNode->SetNewFlipbookImage();
-                            URegimentType* newReg = NewObject<URegimentType>();
-                            newReg->Name = "test";
-                            newReg->associatedUnit = GAME_allUnitTypes[0];
-                            newReg->unitAmount = 20;
-                            newReg->associatedFaction = GAME_allFactions[0];
-                            newReg->PercentOrganized = 100;
-                            newReg->nodesMovable = GAME_allUnitTypes[0]->baseTravelableDistance;
-                            connedNode->addNewUnit(newReg);
-
-                            URegimentType* newReg2 = NewObject<URegimentType>();
-                            newReg2->Name = "test";
-                            newReg2->associatedUnit = GAME_allUnitTypes[0];
-                            newReg2->unitAmount = 20;
-                            newReg2->associatedFaction = GAME_allFactions[0];
-                            newReg2->PercentOrganized = 100;
-                            newReg2->nodesMovable = GAME_allUnitTypes[0]->baseTravelableDistance;
-                            connedNode->addNewUnit(newReg2);
-                        }
-                    }
-                }
-            }
-        }
 	}
 }
 bool AdirtyWarGameModeBase::ShouldHappen(int percentage)
 {
     return (FMath::RandRange(1, 100 / percentage) == 1 ? true : false);
+}
+void AdirtyWarGameModeBase::GAME_ONHOURLY()
+{
+}
+void AdirtyWarGameModeBase::GAME_ONDAILY()
+{
+}
+void AdirtyWarGameModeBase::GAME_ONWEEKLY()
+{
+    GenerateIntel();
+}
+void AdirtyWarGameModeBase::GAME_ONMONTHLY()
+{
+}
+void AdirtyWarGameModeBase::GAME_ONYEARLY()
+{
+}
+
+void AdirtyWarGameModeBase::GenerateIntel()
+{
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    UE_LOG(LogTemp, Error, TEXT("init GenerateIntel, sel intel: %d"), PlayerController->selectedNode->NODE_INTEL);
+
+    for (AdwNode* node : DWNodes)
+    {
+        float intelmult = 1.f;
+        if (node->NODE_FACTION == *GAME_allFactions.Find("None")) { //not govn
+            intelmult = 1.f;
+        }
+        else if (node->NODE_FACTION != *GAME_allFactions.Find("Govn"))
+        {
+            intelmult = 2.f;
+        }
+        else
+        {
+            intelmult = 0.f;
+        }
+        node->NODE_INTEL -= GAME_BASEINTELDECAY * intelmult;
+        for (URegimentType* unit : node->NODE_REGIMENTS)
+        {
+            if (unit->associatedFaction == *GAME_allFactions.Find("Govn")) //is govn
+            {
+                node->NODE_INTEL += (unit->associatedUnit->baseIntelGeneration * unit->unitAmount);
+            }
+                
+        }
+        if ((node->NODE_FACTION == *GAME_allFactions.Find("Govn")) && (node->NODE_INTEL < 25)) {
+            node->NODE_FACTION = *GAME_allFactions.Find("None");
+            node->SetNewFlipbookImage();
+        }
+        else if ((node->NODE_FACTION == *GAME_allFactions.Find("None")) && (node->NODE_INTEL >= 50))
+        {
+            node->NODE_FACTION = *GAME_allFactions.Find("Govn");
+            node->SetNewFlipbookImage();
+        }
+    }
+
+    //refresh UI
+    
+    if (PlayerController->selectedNode)
+    {
+        if (PlayerController->NodeClickedHUD)
+        {
+            PlayerController->NodeClickedHUD->SetNodeIntelProg(PlayerController->selectedNode->NODE_INTEL);
+        }
+    }
+
+    UE_LOG(LogTemp, Error, TEXT("finish GenerateIntel, sel intel: %d"), PlayerController->selectedNode->NODE_INTEL);
 }

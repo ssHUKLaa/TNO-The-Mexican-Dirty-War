@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "dwNodeUnitEntry.h"
 #include <dirtyWar/dirtyWarGameModeBase.h>
 #include "../mouseController.h"
-#include "dwNodeUnitEntry.h"
+
 
 
 void UdwNodeUnitEntry::NativeConstruct()

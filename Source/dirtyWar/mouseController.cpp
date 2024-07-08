@@ -164,7 +164,7 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
         controller = NodeID->NODE_FACTION->Name;
     }
     else {
-        controller = "People";
+        controller = "Error";
     }
 
     
@@ -184,8 +184,9 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
         NodeClickedHUD = CreateWidget<UdwOnNodeClickWidget>(this, NodeClickedHUDClass);
         if (NodeClickedHUD) {
             NodeClickedHUD->AddToPlayerScreen();
-            NodeClickedHUD->SetNodeText(name,controller);
+            NodeClickedHUD->SetNodeText(name);
             NodeClickedHUD->SetNodeUnits(NodeID->NODE_REGIMENTS, this);
+            NodeClickedHUD->SetNodeIntelProg(NodeID->NODE_INTEL);
         }
     }
     //reticle anim

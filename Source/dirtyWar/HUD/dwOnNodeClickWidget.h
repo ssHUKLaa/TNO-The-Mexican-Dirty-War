@@ -9,6 +9,7 @@
 #include "Components/Border.h"
 #include "dwNodeNameWidget.h"
 #include "Components/Scrollbox.h"
+#include <Components/ProgressBar.h>
 #include "dwOnNodeClickWidget.generated.h"
 
 
@@ -35,16 +36,17 @@ public:
 	void slideOutAnim();
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
-	void SetNodeText(FString name, FString control);
+	void SetNodeText(FString name);
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetNodeUnits(TArray<URegimentType*> nodeUnits, AmouseController* ctrl);
 
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void SetNodeIntelProg(int32 intel);
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwNodeText;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* dwNodeControlledText;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UBorder* NodeClickedBorder;
@@ -57,4 +59,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UScrollBox* dwNodeUnitList;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UProgressBar* dwNodeIntelProgbar;
+
+
 };
