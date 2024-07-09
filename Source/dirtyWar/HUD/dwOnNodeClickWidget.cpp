@@ -76,7 +76,7 @@ void UdwOnNodeClickWidget::SetNodeIntelProg(int32 intel)
 
 void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, AmouseController* ctrl)
 {
-    
+    dwNodeUnitList->ClearChildren();
     for (URegimentType* node : nodeUntis) {
         UdwNodeUnitEntry* nodeEntry = CreateWidget<UdwNodeUnitEntry>(ctrl, ctrl->UnitEntryHUDClass);
         nodeEntry->associatedRegiment = node;

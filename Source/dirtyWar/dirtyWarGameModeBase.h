@@ -11,9 +11,7 @@
 
 
 
-/**
- * 
- */
+
 
 USTRUCT(BlueprintType)
 struct FGameDate
@@ -37,6 +35,57 @@ public:
 
 	FGameDate(int32 InYear, int32 InMonth, int32 InDay, int32 InHour)
 		: year(InYear), month(InMonth), day(InDay), hour(InHour)
+	{
+	}
+};
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
+struct FNodeDistancePair
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AdwNode* Node;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameDate Distance;
+
+	FNodeDistancePair()
+		: Node(nullptr), Distance(FGameDate())
+	{
+	}
+
+	FNodeDistancePair(AdwNode* InNode, FGameDate InDistance)
+		: Node(InNode), Distance(InDistance)
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FRegimentMovementData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+	URegimentType* RegimentType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay")
+	TArray<FNodeDistancePair> NodeDistances;
+
+	// Default constructor
+	FRegimentMovementData()
+	{
+		RegimentType = nullptr;
+	}
+
+	// Constructor with parameters
+	FRegimentMovementData(URegimentType* InRegimentType, const TArray<FNodeDistancePair>& InNodeDistances)
+		: RegimentType(InRegimentType)
+		, NodeDistances(InNodeDistances)
 	{
 	}
 };
@@ -107,6 +156,9 @@ public:
 	TMap<UEquipmentType*, int32> GAME_currentEquipment = {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FRegimentMovementData> GAME_movingUnits = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float GAME_BASEINTELDECAY = 2.f;
 
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
@@ -122,6 +174,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void GenerateIntel();
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void decrementFGameDate(FGameDate& date);
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void moveUnits();
 
 
 

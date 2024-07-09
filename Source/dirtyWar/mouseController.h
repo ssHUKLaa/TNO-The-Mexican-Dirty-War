@@ -11,6 +11,7 @@
 #include "HUD/dwOnNodeClickWidget.h"
 #include "HUD/dwNodeUnitEntry.h"
 #include "nodeStruct.h"
+#include "dirtyWarGameModeBase.h"
 #include "mouseController.generated.h"
 
 
@@ -64,15 +65,21 @@ protected:
 
 	void BindSpaceBarAction();
 
+	void HandleRightClick();
+
 	
 
 	void HandleClick();
+
+	TArray<FNodeDistancePair> utilAStarSearch(AdwNode* start, AdwNode* end, AdirtyWarGameModeBase* YourGameMode);
+
+	FGameDate convertDistToGameTime(float dist);
 
 	
 
 	void NodeClicked(AdwNode* NodeID);
 
-
+	float GetDistanceBetweenNodes(AdwNode* Node1, AdwNode* Node2);
 	void Zoom(float Value);
 
 	

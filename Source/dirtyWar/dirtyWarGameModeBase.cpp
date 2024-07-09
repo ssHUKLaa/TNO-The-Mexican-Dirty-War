@@ -127,7 +127,20 @@ void AdirtyWarGameModeBase::BeginPlay()
     soldier_unit->baseTacticsLevel = 1;
     soldier_unit->baseIntelGeneration = 0.2;
     soldier_unit->basePower = 1;
-    soldier_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1)};
+    soldier_unit->requiredEquipment = { 
+        setUpRequiredEquipments(infantry_eq_1,1), 
+        setUpRequiredEquipments(support_eq,1)};
+
+    UUnitType* dfs_unit = NewObject<UUnitType>();
+    dfs_unit->Name = "DFS";
+    dfs_unit->Description = "WIP";
+    dfs_unit->techLevel = 1;
+    dfs_unit->healthPoints = 50;
+    dfs_unit->baseTravelableDistance = 4;
+    dfs_unit->baseTacticsLevel = 0.8;
+    dfs_unit->baseIntelGeneration = 1;
+    dfs_unit->basePower = 0.7;
+    dfs_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1) };
 
     GAME_allUnitTypes.Add(soldier_unit);
 
@@ -367,26 +380,6 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
         }
 	}
 }
-bool AdirtyWarGameModeBase::ShouldHappen(int percentage)
-{
-    return (FMath::RandRange(1, 100 / percentage) == 1 ? true : false);
-}
-void AdirtyWarGameModeBase::GAME_ONHOURLY()
-{
-}
-void AdirtyWarGameModeBase::GAME_ONDAILY()
-{
-}
-void AdirtyWarGameModeBase::GAME_ONWEEKLY()
-{
-    GenerateIntel();
-}
-void AdirtyWarGameModeBase::GAME_ONMONTHLY()
-{
-}
-void AdirtyWarGameModeBase::GAME_ONYEARLY()
-{
-}
 
 void AdirtyWarGameModeBase::GenerateIntel()
 {
@@ -414,7 +407,7 @@ void AdirtyWarGameModeBase::GenerateIntel()
             {
                 node->NODE_INTEL += (unit->associatedUnit->baseIntelGeneration * unit->unitAmount);
             }
-                
+
         }
         if ((node->NODE_FACTION == *GAME_allFactions.Find("Govn")) && (node->NODE_INTEL < 25)) {
             node->NODE_FACTION = *GAME_allFactions.Find("None");
@@ -428,7 +421,7 @@ void AdirtyWarGameModeBase::GenerateIntel()
     }
 
     //refresh UI
-    
+
     if (PlayerController->selectedNode)
     {
         if (PlayerController->NodeClickedHUD)
@@ -439,3 +432,95 @@ void AdirtyWarGameModeBase::GenerateIntel()
 
     UE_LOG(LogTemp, Error, TEXT("finish GenerateIntel, sel intel: %d"), PlayerController->selectedNode->NODE_INTEL);
 }
+void AdirtyWarGameModeBase::decrementFGameDate(FGameDate& date)
+{
+    if (date.hour > 0)
+    {
+        date.hour--;
+    }
+    else
+    {
+        if (date.day > 0)
+        {
+            date.day--;
+            date.hour = 23;
+        }
+        else
+        {
+            if (date.month > 0) 
+            {
+                date.month--;
+                
+                date.day = 30; 
+                date.hour = 23;
+            }
+            else
+            {
+                if (date.year > 0)
+                {
+                    date.year--;
+                    date.month = 12; 
+                    date.day = 30;   
+                    date.hour = 23;
+                }
+            }
+        }
+    }
+    UE_LOG(LogTemp, Warning, TEXT("unit movement Game Time: %d years -%d months-%d days %d hours"), date.year, date.month, date.day, date.hour);
+}
+void AdirtyWarGameModeBase::moveUnits()
+{
+    for (auto It = GAME_movingUnits.CreateIterator(); It; ++It)
+    {
+        FRegimentMovementData& unitline = *It;
+
+        FNodeDistancePair& nextOne = unitline.NodeDistances[0];
+
+        if (nextOne.Distance.hour == 0 && nextOne.Distance.day == 0 && nextOne.Distance.month == 0 && nextOne.Distance.year == 0)
+        {
+            
+            AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+            if (unitline.NodeDistances.Num() > 1) {
+                UE_LOG(LogTemp, Warning, TEXT("unit moving now from %s"), *nextOne.Node->NODE_NAME);
+                nextOne.Node->NODE_REGIMENTS.Remove(unitline.RegimentType);
+                unitline.NodeDistances.RemoveAt(0);
+                nextOne.Node->NODE_REGIMENTS.Add(unitline.RegimentType);
+                UE_LOG(LogTemp, Warning, TEXT("to %s"), *nextOne.Node->NODE_NAME);
+            }
+            else if (unitline.NodeDistances.Num() == 1)
+            {
+                unitline.NodeDistances.RemoveAt(0);
+                It.RemoveCurrent();
+                UE_LOG(LogTemp, Warning, TEXT("unit done moving"));
+            }
+            PlayerController->NodeClickedHUD->SetNodeUnits(PlayerController->selectedNode->NODE_REGIMENTS, PlayerController);
+        }
+        else {
+            decrementFGameDate(nextOne.Distance);
+        }
+    }
+
+}
+
+bool AdirtyWarGameModeBase::ShouldHappen(int percentage)
+{
+    return (FMath::RandRange(1, 100 / percentage) == 1 ? true : false);
+}
+void AdirtyWarGameModeBase::GAME_ONHOURLY()
+{
+    moveUnits();
+}
+void AdirtyWarGameModeBase::GAME_ONDAILY()
+{
+}
+void AdirtyWarGameModeBase::GAME_ONWEEKLY()
+{
+    GenerateIntel();
+}
+void AdirtyWarGameModeBase::GAME_ONMONTHLY()
+{
+}
+void AdirtyWarGameModeBase::GAME_ONYEARLY()
+{
+}
+
