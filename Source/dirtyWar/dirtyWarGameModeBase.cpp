@@ -3,9 +3,10 @@
 
 #include "dirtyWarGameModeBase.h"
 #include "mouseController.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "HUD/dwNodeNameWidget.h"
 #include "nodeStruct.h"
-#include "dwNodeConnection.h"
+
 
 
 int daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -87,7 +88,6 @@ void AdirtyWarGameModeBase::BeginPlay()
     GPG->totalUnits = 0;
     GPG->nodeImage = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_red/marker_red_Flipbook.marker_red_Flipbook"));
 
-    // Add references of the factions
     GAME_allFactions.Add("Govn",Govn);
     GAME_allFactions.Add("GPG",GPG);
     GAME_allFactions.Add("None",None);
@@ -143,6 +143,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     dfs_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1) };
 
     GAME_allUnitTypes.Add(soldier_unit);
+    GAME_allUnitTypes.Add(dfs_unit);
 
 
 	UDataTable* MyDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/mappedNode.mappedNode"));
@@ -363,8 +364,12 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                         UStaticMeshComponent* ConnectionMesh = ConnectionActor->GetStaticMeshComponent();
                         if (ConnectionMesh) {
                             ConnectionMesh->SetStaticMesh(DefaultPlaneMesh);
-                            ConnectionMesh->SetMaterial(0, ConnectionMaterial);
-                            ConnectionMesh->SetWorldScale3D(FVector(Distance, 1.0f, 1.0f));
+                            UMaterialInstanceDynamic* DynamicMaterialInstance = UMaterialInstanceDynamic::Create(ConnectionMaterial, ConnectionActor);
+                            ConnectionMesh->SetMaterial(0, DynamicMaterialInstance);
+                            ConnectionMesh->SetWorldScale3D(FVector(Distance, 0.75f, 1.0f));
+
+                            FNodesConnection toFrom(node, connedNode);
+                            FromToNodeConMap.Add(toFrom, ConnectionActor);
 
                         }
                         else {
@@ -406,9 +411,22 @@ void AdirtyWarGameModeBase::GenerateIntel()
             if (unit->associatedFaction == *GAME_allFactions.Find("Govn")) //is govn
             {
                 node->NODE_INTEL += (unit->associatedUnit->baseIntelGeneration * unit->unitAmount);
+
+                if (unit->associatedUnit->Name == "DFS")
+                {
+                    for (int32 connectionnodeid : node->NODE_CONNECTIONS)
+                    {
+                        AdwNode** connodeptr = IDNodeMap.Find(connectionnodeid);
+                        AdwNode* connnode = *connodeptr;
+                        connnode->NODE_INTEL += ((unit->associatedUnit->baseIntelGeneration * unit->unitAmount) / 4.f);
+
+                    }
+                }
             }
 
         }
+
+        //set node images
         if ((node->NODE_FACTION == *GAME_allFactions.Find("Govn")) && (node->NODE_INTEL < 25)) {
             node->NODE_FACTION = *GAME_allFactions.Find("None");
             node->SetNewFlipbookImage();

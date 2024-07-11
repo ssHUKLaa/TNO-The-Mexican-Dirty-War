@@ -7,11 +7,40 @@
 #include "dwNode.h"
 #include "HUD/dwNodeNameWidget.h"
 #include "Engine/DataTable.h"
+#include "dwNodeConnection.h"
 #include "dirtyWarGameModeBase.generated.h"
 
 
 
+USTRUCT(BlueprintType)
+struct FNodesConnection
+{
+	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AdwNode* FromNode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AdwNode* ToNode;
+
+	FNodesConnection() : FromNode(), ToNode() {}
+
+	FNodesConnection(AdwNode* fnode, AdwNode* tnode)
+		: FromNode(fnode), ToNode(tnode)
+	{
+	}
+
+	bool operator==(const FNodesConnection& Other) const
+	{
+		return FromNode == Other.FromNode && ToNode == Other.ToNode;
+	}
+};
+FORCEINLINE uint32 GetTypeHash(const FNodesConnection& Thing)
+{
+	uint32 Hash = FCrc::MemCrc32(&Thing, sizeof(FNodesConnection));
+	return Hash;
+}
 
 USTRUCT(BlueprintType)
 struct FGameDate
@@ -109,6 +138,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TArray<FSlateBrush> frameBrushes;
 
+	
+
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
 	
@@ -121,6 +152,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, AdwNode*> IDNodeMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FNodesConnection, AdwNodeConnection*> FromToNodeConMap;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AdwNode*> DWNodes;
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
