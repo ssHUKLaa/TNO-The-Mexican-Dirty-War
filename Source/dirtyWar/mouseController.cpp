@@ -160,9 +160,28 @@ void AmouseController::HandleRightClick()
                             break; 
                         }
                     }
+                    for (int32 i = 0; i < listOfNodes.Num() - 1; ++i)
+                    {
+                        FNodeDistancePair& nodepair = listOfNodes[i];
+                        AdwNode* node = nodepair.Node;
+                        AdwNode* nextNode;
+
+                        FNodeDistancePair& nextNodepair = listOfNodes[i + 1];
+                        nextNode = nextNodepair.Node;
+                        AdwNodeConnection** connactorptr = node->NODE_CONNECTIONACTORS.Find(nextNode);
+                        if (connactorptr)
+                        {
+                            AdwNodeConnection* connactor = *connactorptr;
+                            connactor->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), FVector4d(0.086, 0.729, 0.129, 0.8));
+                            connectionsMovingUnit.Add(node);
+                        }
+                    }
                     FRegimentMovementData unitDistList = { Pair.Key,listOfNodes };
                     YourGameMode->GAME_movingUnits.Add(unitDistList);
                 }
+
+                //draw 
+
                 player_AllUnits.Empty();
                 NodeClickedHUD->SetNodeUnits(selectedNode->NODE_REGIMENTS, this);
             }
@@ -268,7 +287,25 @@ void AmouseController::HandleClick()
     FHitResult HitResult;
     GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
 
+    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+    if (selectedNode)
+    {
+        for (int32 connid : selectedNode->NODE_CONNECTIONS)
+        {
+            AdwNode* connedNode;
+            AdwNode** ConnedNodePtr = YourGameMode->IDNodeMap.Find(connid);
+            if (ConnedNodePtr) {
+                connedNode = *ConnedNodePtr;
+                AdwNodeConnection** connactorptr = selectedNode->NODE_CONNECTIONACTORS.Find(connedNode);
+                if (connactorptr)
+                {
+                    AdwNodeConnection* connactor = *connactorptr;
+                    connactor->setAnimSwitchParam(false);
+                }
 
+            }
+        }
+    }
     AdwNode* ClickedNode = Cast<AdwNode>(HitResult.GetActor());
     if (ClickedNode)
     {
@@ -281,10 +318,42 @@ void AmouseController::HandleClick()
         UE_LOG(LogTemp, Warning, TEXT("fail"));
     }
 }
+void AmouseController::handleConnectionReUp()
+{
+    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+    for (AdwNode* cAc : connectionsMovingUnit)
+    {
+        for (int32 nodeid : cAc->NODE_CONNECTIONS)
+        {
+            AdwNode** connNodePtr = YourGameMode->IDNodeMap.Find(nodeid);
+            if (connNodePtr)
+            {
+                AdwNode* connNode = *connNodePtr;
+                AdwNodeConnection** connnptr = cAc->NODE_CONNECTIONACTORS.Find(connNode);
+                if (connnptr)
+                {
+                    AdwNodeConnection* connn = *connnptr;
+                    if ((connNode->NODE_FACTION == *YourGameMode->GAME_allFactions.Find("Govn")) && (cAc->NODE_FACTION == *YourGameMode->GAME_allFactions.Find("Govn")))
+                    {
+                        connn->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), FVector4d(0.099899, 0.571125, 0.53948, 0.5));
+                    }
+                    else
+                    {
+                        connn->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), FVector4d(0.698, 0.788, 0.76, 0.5));
+                    }
+                }
+            }
+        }
 
+    }
+    connectionsMovingUnit.Empty();
+}
 
 void AmouseController::NodeClicked(AdwNode* NodeID)
 {
+    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+    handleConnectionReUp();
+
     FVector loc = NodeID->GetActorLocation();
     FString name = *NodeID->NODE_NAME;
     FString controller;
@@ -326,6 +395,26 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
     else
     {
         newReticle->SetActorLocation(loc);
+    }
+
+    //connection stuff
+    
+    for (int32 connid : NodeID->NODE_CONNECTIONS)
+    {
+        AdwNode* connedNode;
+        AdwNode** ConnedNodePtr = YourGameMode->IDNodeMap.Find(connid);
+        if (ConnedNodePtr) {
+            connedNode = *ConnedNodePtr;
+            AdwNodeConnection** connactorptr = NodeID->NODE_CONNECTIONACTORS.Find(connedNode);
+            if (connactorptr)
+            {
+                AdwNodeConnection* connactor = *connactorptr;
+                connactor->setAnimSwitchParam(true);
+            }
+
+        }
+        
+        
     }
     newReticle->SetActorScale3D(FVector(100.f, 100.f, 100.f));
     newReticle->StartScaleAnimation();

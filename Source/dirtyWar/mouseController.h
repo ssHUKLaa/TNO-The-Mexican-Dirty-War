@@ -11,6 +11,7 @@
 #include "HUD/dwOnNodeClickWidget.h"
 #include "HUD/dwNodeUnitEntry.h"
 #include "nodeStruct.h"
+#include "dwNodeConnection.h"
 #include "dirtyWarGameModeBase.h"
 #include "mouseController.generated.h"
 
@@ -57,6 +58,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TMap<URegimentType*,AdwNode*> player_AllUnits;
+
+	UPROPERTY(EditAnywhere)
+	TArray<AdwNode*> connectionsMovingUnit;
+
+	void handleConnectionReUp();
 	
 
 protected:

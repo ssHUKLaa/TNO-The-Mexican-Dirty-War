@@ -275,7 +275,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
         UMaterialInterface* ConnectionMaterial;
         ConnectionMaterial = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/nodeImages/connections/bar_frame_Mat.bar_frame_Mat"));
         UStaticMesh* DefaultPlaneMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Plane.Plane"));
-
+        UFactionType** nonethindy = GAME_allFactions.Find("None");
         //INITIAL NODE SETUP
 		for (FnodeStruct* Row : Rows) {
 			AdwNode* NewNode = GetWorld()->SpawnActor<AdwNode>(AdwNode::StaticClass(), FVector(posx+((Row->POS_X)*10),posy+((Row->POS_Y)*10), 50), FRotator(0.0f, 0.0f, -90.f));
@@ -286,7 +286,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
 			NewNode->NODE_CONNECTIONS = Row->NODE_CONNECTIONS;
             NewNode->NODE_NAME = Row->LOCATION_NAME;
             NewNode->NODE_INTEL = FMath::RoundToInt(FMath::FRand()*100);
-            
+            NewNode->NODE_FACTION = *nonethindy; //all initially none
 			NewNode->setFlipBook();
 
 			IDNodeMap.Add(NewNode->NODE_ID, NewNode);
@@ -306,9 +306,9 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
 
         //NODE CONNECTIONS
         UFactionType** govnthingy = GAME_allFactions.Find("Govn");
-        UFactionType** nonethindy = GAME_allFactions.Find("None");
+        
         for (AdwNode* node : DWNodes) {
-            node->NODE_FACTION = *nonethindy; //all initially none
+            
             if (node->NODE_TYPE == 1) {
                 
                 node->NODE_FACTION = *govnthingy;
@@ -326,7 +326,6 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                     if (connedNode->NODE_TYPE == 0) {
                         int32 RandomIndex = FMath::RandRange(0, 1);
                         if (ShouldHappen(70)) {
-
                             connedNode->NODE_FACTION = *govnthingy;
                             connedNode->SetNewFlipbookImage();
                             URegimentType* newReg = NewObject<URegimentType>();
@@ -363,14 +362,15 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                     if (ConnectionActor) {
                         UStaticMeshComponent* ConnectionMesh = ConnectionActor->GetStaticMeshComponent();
                         if (ConnectionMesh) {
+                            node->NODE_CONNECTIONACTORS.Add(connedNode, ConnectionActor);
+                            connedNode->NODE_CONNECTIONACTORS.Add(node, ConnectionActor);
+
                             ConnectionMesh->SetStaticMesh(DefaultPlaneMesh);
                             UMaterialInstanceDynamic* DynamicMaterialInstance = UMaterialInstanceDynamic::Create(ConnectionMaterial, ConnectionActor);
+                            ConnectionActor->DynamicMaterialInstance = DynamicMaterialInstance;
+                            
                             ConnectionMesh->SetMaterial(0, DynamicMaterialInstance);
-                            ConnectionMesh->SetWorldScale3D(FVector(Distance, 0.75f, 1.0f));
-
-                            FNodesConnection toFrom(node, connedNode);
-                            FromToNodeConMap.Add(toFrom, ConnectionActor);
-
+                            ConnectionMesh->SetWorldScale3D(FVector(Distance, 0.3f, 1.0f));
                         }
                         else {
                             UE_LOG(LogTemp, Error, TEXT("Failed to get static mesh component for connection actor"));
@@ -382,6 +382,29 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                 }
             }
             finishedNodes.Add(node);
+        }
+
+        for (AdwNode* node : DWNodes)
+        {
+            for (int32 connid : node->NODE_CONNECTIONS)
+            {
+                AdwNode* connedNode;
+                AdwNode** ConnedNodePtr = IDNodeMap.Find(connid);
+                if (ConnedNodePtr) {
+                    connedNode = *ConnedNodePtr;
+
+                    AdwNodeConnection** connactorptr = node->NODE_CONNECTIONACTORS.Find(connedNode);
+                    if (connactorptr)
+                    {
+                        AdwNodeConnection* connactor = *connactorptr;
+
+                        if ((connedNode->NODE_FACTION == *GAME_allFactions.Find("Govn")) && (node->NODE_FACTION == *GAME_allFactions.Find("Govn")))
+                        {
+                            connactor->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), FVector4d(0.099899, 0.571125, 0.53948, 0.5));
+                        }
+                    }
+                }
+            }
         }
 	}
 }

@@ -8,6 +8,7 @@
 #include "PaperFlipbook.h"
 #include "nodeStruct.h"
 #include <Components/CapsuleComponent.h>
+#include "dwNodeConnection.h"
 #include "dwNode.generated.h"
 
 
@@ -38,6 +39,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UFactionType* NODE_FACTION;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -53,6 +55,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int32> NODE_CONNECTIONS;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<AdwNode*, AdwNodeConnection*> NODE_CONNECTIONACTORS;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString NODE_NAME;

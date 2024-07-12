@@ -146,7 +146,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 nodesMovable;
 
-	URegimentType() : Name(""), associatedUnit(nullptr), unitAmount(0), associatedFaction(nullptr) {}
+	URegimentType() : Name(""), associatedUnit(nullptr), associatedFaction(nullptr),unitAmount(0)  {}
 
 	URegimentType(FString curName, UUnitType* curUnitAss, int32 curAmount, UFactionType* curFac, int32 curOrg, int32 curnodemov)
 		: Name(curName), associatedUnit(curUnitAss), unitAmount(curAmount), associatedFaction(curFac), PercentOrganized(curOrg), nodesMovable(curnodemov)

@@ -14,6 +14,10 @@ class DIRTYWAR_API AdwNodeConnection : public AStaticMeshActor
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstanceDynamic* DynamicMaterialInstance;
 
-	
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void setAnimSwitchParam(bool which);
 };
