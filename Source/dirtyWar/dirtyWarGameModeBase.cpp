@@ -597,7 +597,6 @@ void AdirtyWarGameModeBase::decrementFGameDate(FGameDate& date)
             }
         }
     }
-    UE_LOG(LogTemp, Warning, TEXT("unit movement Game Time: %d years -%d months-%d days %d hours"), date.year, date.month, date.day, date.hour);
 }
 void AdirtyWarGameModeBase::moveUnits()
 {
@@ -655,14 +654,12 @@ void AdirtyWarGameModeBase::moveUnits()
             {
                 unitline.NodeDistances.RemoveAt(0);
                 It.RemoveCurrent();
-                
-
 
                 UE_LOG(LogTemp, Warning, TEXT("unit done moving"));
             }
             PlayerController->NodeClickedHUD->SetNodeUnits(PlayerController->selectedNode->NODE_REGIMENTS, PlayerController);
         }
-        else {
+        else if (!GAME_nodesInBattle.Contains(nextOne.Node)){ // if not in battle, start decrementing down when move
             decrementFGameDate(nextOne.Distance);
         }
     }
@@ -673,6 +670,7 @@ bool AdirtyWarGameModeBase::ShouldHappen(int percentage)
 {
     return (FMath::RandRange(1, 100 / percentage) == 1 ? true : false);
 }
+// always call functions, dont put much of anything here so we know the line of continual operations
 void AdirtyWarGameModeBase::GAME_ONHOURLY()
 {
     moveUnits();

@@ -150,6 +150,7 @@ void AmouseController::BindSpaceBarAction() {
 }
 void AmouseController::HandleRightClick()
 {
+    //moving units
     if (player_AllUnits.Num()>0){
         FHitResult HitResult;
         GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
