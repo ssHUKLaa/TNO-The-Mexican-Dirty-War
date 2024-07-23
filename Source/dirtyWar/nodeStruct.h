@@ -34,12 +34,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 totalUnits;
 
+	UPROPERTY(EditAnywhere)
+	FVector4d factionColour;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* nodeImage;
-	UFactionType() : Name(""), Description(""), Association(-1), totalUnits(0), nodeImage() {}
+	UFactionType() : Name(""), Description(""), Association(-1), totalUnits(0), nodeImage(), factionColour(0,0,0,0){}
 
-	UFactionType(FString curName, FString curDesc, int32 curAssoc, int32 curUnits, UPaperFlipbook* curFlip)
-		: Name(curName), Description(curDesc), Association(curAssoc), totalUnits(curUnits), nodeImage(curFlip)
+	UFactionType(FString curName, FString curDesc, int32 curAssoc, int32 curUnits, UPaperFlipbook* curFlip, FVector4d curColour)
+		: Name(curName), Description(curDesc), Association(curAssoc), totalUnits(curUnits), nodeImage(curFlip), factionColour(curColour)
 	{
 	}
 };
@@ -114,10 +117,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<URequiredEquipments*> requiredEquipment;
 
-	UUnitType() : Name(""), Description(""), techLevel(0), healthPoints(0), baseTravelableDistance(0), baseTacticsLevel(0), baseIntelGeneration(0), basePower(0) {}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FSlateBrush unitEntryIcon;
 
-	UUnitType(FString curName, FString curDesc, int32 curTech, int32 curHealth, int32 curTravel, int32 curTactic, double curIntel, int32 curPower, TArray<URequiredEquipments*> curReq)
-		: Name(curName), Description(curDesc), techLevel(curTech), healthPoints(curHealth), baseTravelableDistance(curTravel), baseTacticsLevel(curTactic), baseIntelGeneration(curIntel), basePower(curPower), requiredEquipment(curReq)
+	UUnitType() : Name(""), Description(""), techLevel(0), healthPoints(0), baseTravelableDistance(0), baseTacticsLevel(0), baseIntelGeneration(0), basePower(0), unitEntryIcon() {}
+
+	UUnitType(FString curName, FString curDesc, int32 curTech, int32 curHealth, int32 curTravel, int32 curTactic, double curIntel, int32 curPower, TArray<URequiredEquipments*> curReq, FSlateBrush unitEntryIcon)
+		: Name(curName), Description(curDesc), techLevel(curTech), healthPoints(curHealth), baseTravelableDistance(curTravel), baseTacticsLevel(curTactic), baseIntelGeneration(curIntel), basePower(curPower), requiredEquipment(curReq), unitEntryIcon(unitEntryIcon)
 	{
 	}
 };

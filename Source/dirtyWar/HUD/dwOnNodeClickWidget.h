@@ -10,6 +10,8 @@
 #include "dwNodeNameWidget.h"
 #include "Components/Scrollbox.h"
 #include <Components/ProgressBar.h>
+#include <Components/CanvasPanel.h>
+#include "dwNodeClickedPieChart.h"
 #include "dwOnNodeClickWidget.generated.h"
 
 
@@ -28,6 +30,9 @@ protected:
 public:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void openBattleMenu();
+
 	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	void NativeOnMouseLeave(const FPointerEvent& InMouseEvent);
@@ -35,11 +40,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void slideOutAnim();
 
+	void SetBattlePanelVisibility(ESlateVisibility vis);
+
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetNodeText(FString name);
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetNodeUnits(TArray<URegimentType*> nodeUnits, AmouseController* ctrl);
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void updateAllUnitOnBattle();
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void SetFactionControl(TMap<UFactionType*, int32> input);
+
+	FLinearColor FVector4dToFLinearColor(const FVector4d& Vector);
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetNodeIntelProg(int32 intel);
@@ -54,6 +69,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* dwNodeExitButton;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UButton* dwOpenNodeBattleBtn;
+
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* SlideIN; 
 
@@ -63,5 +81,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UProgressBar* dwNodeIntelProgbar;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UdwNodeClickedPieChart* PieChartHUD;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* dwNodeControlText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UTextBlock* dwNodeControlIntel;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UCanvasPanel* nodeClickedBattlePanel;
 
 };

@@ -30,6 +30,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void setTravelableProgBar();
 
+	void setUnitImage();
+
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void onUnitEntrySelected();
 
@@ -55,6 +57,9 @@ public:
 	UImage* dwUnitSelOutline;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UImage* dwUnitEntryIcon;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UButton* dwUnitEntryBtnSel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -67,5 +72,8 @@ public:
 	UProgressBar* TravelableNodeDistBar;
 
 	virtual void NativeConstruct() override;
+
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void UpdateUnitEntryText();
 	
 };

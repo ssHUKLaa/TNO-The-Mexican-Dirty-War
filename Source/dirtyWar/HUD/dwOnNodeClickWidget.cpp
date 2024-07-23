@@ -33,14 +33,19 @@ void UdwOnNodeClickWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 void UdwOnNodeClickWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
+    nodeClickedBattlePanel->SetVisibility(ESlateVisibility::Hidden);
     dwNodeExitButton->OnClicked.AddUniqueDynamic(this, &UdwOnNodeClickWidget::slideOutAnim);
+    dwOpenNodeBattleBtn->OnClicked.AddUniqueDynamic(this, &UdwOnNodeClickWidget::openBattleMenu);
 
     if (SlideIN)
     {
         PlayAnimationForward(SlideIN);
 
     }
+}
+void UdwOnNodeClickWidget::openBattleMenu()
+{
+    Cast<AmouseController>(GetWorld()->GetFirstPlayerController())->startNodeBattleHUD(Cast<AmouseController>(GetWorld()->GetFirstPlayerController())->selectedNode);
 }
 
 void UdwOnNodeClickWidget::slideOutAnim()
@@ -60,7 +65,10 @@ void UdwOnNodeClickWidget::slideOutAnim()
 
 }
 
-
+void UdwOnNodeClickWidget::SetBattlePanelVisibility(ESlateVisibility vis)
+{
+    nodeClickedBattlePanel->SetVisibility(vis);
+}
 
 void UdwOnNodeClickWidget::SetNodeText(FString name)
 {
@@ -83,11 +91,44 @@ void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, Amouse
         nodeEntry->setUnitNameText(node->Name,node->associatedUnit->Name, node->unitAmount,node->PercentOrganized);
         nodeEntry->setTravelableProgBar();
         nodeEntry->persistsEntryStatus();
-
+        nodeEntry->UpdateUnitEntryText();
+        nodeEntry->setUnitImage();
         dwNodeUnitList->AddChild(nodeEntry);
         
 
     }
     UE_LOG(LogTemp, Warning, TEXT("length: %d"), nodeUntis.Num());
 
+}
+void UdwOnNodeClickWidget::updateAllUnitOnBattle()
+{
+    for (UWidget* indiv : dwNodeUnitList->GetAllChildren())
+    {
+        UdwNodeUnitEntry* nodeEntry = Cast<UdwNodeUnitEntry>(indiv);
+        nodeEntry->dwUnitEntryNameText->SetText(FText::FromString("In Battle"));
+    }
+}
+void UdwOnNodeClickWidget::SetFactionControl(TMap<UFactionType*, int32> input)
+{
+    PieChartHUD->Segments.Empty();
+    FString highestControl = "No One";
+    int32 controlCheck = 0;
+    for (TPair<UFactionType*, int32> facControl : input)
+    {
+        FPieChartSegment newCont(FVector4dToFLinearColor(facControl.Key->factionColour),facControl.Value,facControl.Key,1.0);
+        PieChartHUD->Segments.Add(newCont);
+        if (facControl.Value >= controlCheck)
+        {
+            controlCheck = facControl.Value;
+            highestControl = facControl.Key->Name;
+        }
+    }
+    highestControl = (highestControl +" Has Majority Control");
+    dwNodeControlText->SetText(FText::FromString(highestControl));
+    PieChartHUD->RefreshPieChart();
+}
+
+FLinearColor UdwOnNodeClickWidget::FVector4dToFLinearColor(const FVector4d& Vector)
+{
+    return FLinearColor(Vector.X, Vector.Y, Vector.Z, Vector.W);
 }

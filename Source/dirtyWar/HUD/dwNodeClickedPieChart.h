@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include <dirtyWar/nodeStruct.h>
 #include "dwNodeClickedPieChart.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FPieChartSegment
@@ -18,18 +20,20 @@ struct FPieChartSegment
     float Percentage;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PieChart")
-    FText SegmentName; 
+    UFactionType* segmentFaction;
 
     UPROPERTY()
     float CurrentScaleFactor;
-
-    
-    
 
     // Constructor
     FPieChartSegment()
         : Percentage(0.0f)
         , CurrentScaleFactor(1.0f)
+    {
+    }
+
+    FPieChartSegment(FLinearColor Color, float Percentage, UFactionType* segmentFaction, float CurrentScaleFactor)
+        : Color(Color), Percentage(Percentage), segmentFaction(segmentFaction), CurrentScaleFactor(CurrentScaleFactor)
     {
     }
 };
@@ -46,6 +50,8 @@ public:
     TArray<FPieChartSegment> Segments;
 
     virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
+
+    void RefreshPieChart();
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PieChart")
     float changeableScaleFactor = 1.1f;

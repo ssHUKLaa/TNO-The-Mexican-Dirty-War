@@ -109,7 +109,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TArray<FSlateBrush> frameBrushes;
 
-	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TArray<FSlateBrush> unitBrushes;
 
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
@@ -148,6 +149,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int GAME_endYear = 1975;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AdwNode*> GAME_nodesInBattle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString,UFactionType*> GAME_allFactions = {};

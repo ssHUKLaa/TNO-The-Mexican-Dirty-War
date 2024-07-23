@@ -140,16 +140,16 @@ void UdwNodeNameWidget::openGovnHUDTab()
 {
 
     AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
-    if (GovnInfoHUD == nullptr) {
+    if (PlayerController->GovnInfoHUD == nullptr) {
         this->openClearAllTopTabs(PlayerController);
-        GovnInfoHUD = CreateWidget<UdwGovnInfoHUD>(PlayerController, PlayerController->GovnInfoHUDClass);
-        if (GovnInfoHUD) {
-            GovnInfoHUD->AddToPlayerScreen();
+        PlayerController->GovnInfoHUD = CreateWidget<UdwGovnInfoHUD>(PlayerController, PlayerController->GovnInfoHUDClass);
+        if (PlayerController->GovnInfoHUD) {
+            PlayerController->GovnInfoHUD->AddToPlayerScreen();
         }
     }
-    else if(GovnInfoHUD != nullptr) {
-        GovnInfoHUD->RemoveFromParent();
-        GovnInfoHUD = nullptr;
+    else if(PlayerController->GovnInfoHUD != nullptr) {
+        PlayerController->GovnInfoHUD->RemoveFromParent();
+        PlayerController->GovnInfoHUD = nullptr;
     }
     
 }
@@ -195,9 +195,9 @@ void UdwNodeNameWidget::openClearAllTopTabs(AmouseController* PlayerController)
         WpnsInfoHUD->RemoveFromParent();
         WpnsInfoHUD = nullptr;
     }
-    if (GovnInfoHUD != nullptr) {
-        GovnInfoHUD->RemoveFromParent();
-        GovnInfoHUD = nullptr;
+    if (PlayerController->GovnInfoHUD != nullptr) {
+        PlayerController->GovnInfoHUD->RemoveFromParent();
+        PlayerController->GovnInfoHUD = nullptr;
     }
     if (RecruitUnitHUD != nullptr) {
         RecruitUnitHUD->RemoveFromParent();

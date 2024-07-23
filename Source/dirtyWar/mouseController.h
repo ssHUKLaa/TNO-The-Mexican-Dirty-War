@@ -10,9 +10,12 @@
 #include "HUD/dwNodeNameWidget.h"
 #include "HUD/dwOnNodeClickWidget.h"
 #include "HUD/dwNodeUnitEntry.h"
+#include "HUD/dwGovnInfoHUD.h"
 #include "nodeStruct.h"
 #include "dwNodeConnection.h"
 #include "dirtyWarGameModeBase.h"
+#include "HUD/dwBattleFactionEntry.h"
+#include "HUD/dwNodeBattleUnitEntryHUD.h"
 #include "mouseController.generated.h"
 
 
@@ -43,9 +46,18 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UdwOnNodeClickWidget> NodeClickedHUDClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwNodeBattleHUD> NodeBattleHUDClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwBattleFactionEntry> NodeBattleHUDFactionClass;
+
 	UPROPERTY()
 	class UdwOnNodeClickWidget* NodeClickedHUD;
 	bool overHUD = false;
+
+	UPROPERTY(EditAnywhere)
+	class UdwNodeBattleHUD* NodeBattleHUDSelected;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UdwGovnInfoHUD> GovnInfoHUDClass;
@@ -57,13 +69,22 @@ public:
 	TSubclassOf<class UdwNodeUnitEntry> UnitEntryHUDClass;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwNodeBattleUnitEntryHUD> BattleUnitEntryHUDClass;
+
+	UPROPERTY(EditAnywhere)
 	TMap<URegimentType*,AdwNode*> player_AllUnits;
 
 	UPROPERTY(EditAnywhere)
 	TArray<AdwNode*> connectionsMovingUnit;
 
 	void handleConnectionReUp();
+
+	UPROPERTY()
+	UdwGovnInfoHUD* GovnInfoHUD;
 	
+	void NodeClicked(AdwNode* NodeID);
+
+	class UdwNodeBattleHUD* startNodeBattleHUD(AdwNode* node);
 
 protected:
 	virtual void BeginPlay() override;
@@ -83,7 +104,7 @@ protected:
 
 	
 
-	void NodeClicked(AdwNode* NodeID);
+	
 
 	float GetDistanceBetweenNodes(AdwNode* Node1, AdwNode* Node2);
 	void Zoom(float Value);

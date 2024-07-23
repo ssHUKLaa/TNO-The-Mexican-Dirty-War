@@ -74,7 +74,10 @@ int32 UdwNodeClickedPieChart::NativePaint(const FPaintArgs& Args, const FGeometr
 
     return LayerId + 1;
 }
-
+void UdwNodeClickedPieChart::RefreshPieChart()
+{
+    Invalidate(EInvalidateWidget::LayoutAndVolatility);
+}
 FReply UdwNodeClickedPieChart::NativeOnMouseMove(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
     Super::NativeOnMouseMove(MyGeometry, MouseEvent);

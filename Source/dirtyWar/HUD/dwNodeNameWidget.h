@@ -65,8 +65,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void openClearAllTopTabs(AmouseController* PlayerController);
 
-	UPROPERTY()
-	UdwGovnInfoHUD* GovnInfoHUD;
+	
 
 	UPROPERTY()
 	UdwWpnsMnuHUD* WpnsInfoHUD;

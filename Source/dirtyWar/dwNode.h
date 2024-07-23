@@ -69,5 +69,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 NODE_INTEL;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<UFactionType*, int32> NODE_FACTION_CONTROL;
+
 
 };

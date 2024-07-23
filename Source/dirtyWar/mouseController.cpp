@@ -8,6 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include <PaperSpriteComponent.h>
 #include "reticleActor.h"
+#include "HUD/dwNodeBattleHUD.h"
 #include "util/PriorityQueue.cpp"
 
 
@@ -28,6 +29,9 @@ AmouseController::AmouseController()
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder5(TEXT("/Game/dwHUD/dwRecruitUnitHUD.dwRecruitUnitHUD_C"));
 
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder6(TEXT("/Game/dwHUD/dwNodeUnitEntryHUD.dwNodeUnitEntryHUD_C"));
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder7(TEXT("/Game/dwHUD/dwNodeBattle.dwNodeBattle_C"));
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder8(TEXT("/Game/dwHUD/dwNodeBattleFacEntryHUD.dwNodeBattleFacEntryHUD_C"));
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder9(TEXT("/Game/dwHUD/dwBattleFacUnitHUD.dwBattleFacUnitHUD_C"));
         if (HUDClassFinder.Succeeded()) {
             playerHUDClass = HUDClassFinder.Object;
         }
@@ -53,6 +57,15 @@ AmouseController::AmouseController()
         }
         if (HUDClassFinder6.Succeeded()) {
             UnitEntryHUDClass = HUDClassFinder6.Object;
+        }
+        if (HUDClassFinder7.Succeeded()) {
+            NodeBattleHUDClass = HUDClassFinder7.Object;
+        }
+        if (HUDClassFinder8.Succeeded()) {
+            NodeBattleHUDFactionClass = HUDClassFinder8.Object;
+        }
+        if (HUDClassFinder9.Succeeded()) {
+            BattleUnitEntryHUDClass = HUDClassFinder9.Object;
         }
     }
     else {
@@ -287,31 +300,13 @@ void AmouseController::HandleClick()
     FHitResult HitResult;
     GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
 
-    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
-    if (selectedNode)
-    {
-        for (int32 connid : selectedNode->NODE_CONNECTIONS)
-        {
-            AdwNode* connedNode;
-            AdwNode** ConnedNodePtr = YourGameMode->IDNodeMap.Find(connid);
-            if (ConnedNodePtr) {
-                connedNode = *ConnedNodePtr;
-                AdwNodeConnection** connactorptr = selectedNode->NODE_CONNECTIONACTORS.Find(connedNode);
-                if (connactorptr)
-                {
-                    AdwNodeConnection* connactor = *connactorptr;
-                    connactor->setAnimSwitchParam(false);
-                }
-
-            }
-        }
-    }
+    
     AdwNode* ClickedNode = Cast<AdwNode>(HitResult.GetActor());
     if (ClickedNode)
     {
         if (selectedNode!= ClickedNode) {
-            selectedNode = ClickedNode;
-            NodeClicked(selectedNode);
+            
+            NodeClicked(ClickedNode);
         }
     }
     else {
@@ -333,9 +328,9 @@ void AmouseController::handleConnectionReUp()
                 if (connnptr)
                 {
                     AdwNodeConnection* connn = *connnptr;
-                    if ((connNode->NODE_FACTION == *YourGameMode->GAME_allFactions.Find("Govn")) && (cAc->NODE_FACTION == *YourGameMode->GAME_allFactions.Find("Govn")))
+                    if (connNode->NODE_FACTION == cAc->NODE_FACTION)
                     {
-                        connn->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), FVector4d(0.099899, 0.571125, 0.53948, 0.5));
+                        connn->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), cAc->NODE_FACTION->factionColour);
                     }
                     else
                     {
@@ -352,6 +347,25 @@ void AmouseController::handleConnectionReUp()
 void AmouseController::NodeClicked(AdwNode* NodeID)
 {
     AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+    if (selectedNode)
+    {
+        for (int32 connid : selectedNode->NODE_CONNECTIONS)
+        {
+            AdwNode* connedNode;
+            AdwNode** ConnedNodePtr = YourGameMode->IDNodeMap.Find(connid);
+            if (ConnedNodePtr) {
+                connedNode = *ConnedNodePtr;
+                AdwNodeConnection** connactorptr = selectedNode->NODE_CONNECTIONACTORS.Find(connedNode);
+                if (connactorptr)
+                {
+                    AdwNodeConnection* connactor = *connactorptr;
+                    connactor->setAnimSwitchParam(false);
+                }
+
+            }
+        }
+    }
+    selectedNode = NodeID;
     handleConnectionReUp();
 
     FVector loc = NodeID->GetActorLocation();
@@ -376,6 +390,11 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
         NodeClickedHUD->slideOutAnim();
         NodeClickedHUD = nullptr;
     }
+    if (NodeBattleHUDSelected)
+    {
+        NodeBattleHUDSelected->RemoveFromParent();
+        NodeBattleHUDSelected = nullptr;
+    }
 
     if (NodeClickedHUDClass) {
         NodeClickedHUD = CreateWidget<UdwOnNodeClickWidget>(this, NodeClickedHUDClass);
@@ -384,6 +403,16 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
             NodeClickedHUD->SetNodeText(name);
             NodeClickedHUD->SetNodeUnits(NodeID->NODE_REGIMENTS, this);
             NodeClickedHUD->SetNodeIntelProg(NodeID->NODE_INTEL);
+            NodeClickedHUD->SetFactionControl(NodeID->NODE_FACTION_CONTROL);
+            
+            if (YourGameMode->GAME_nodesInBattle.Contains(NodeID))
+            {
+                NodeClickedHUD->SetBattlePanelVisibility(ESlateVisibility::Visible);
+                NodeBattleHUDSelected = startNodeBattleHUD(NodeID);
+                NodeClickedHUD->updateAllUnitOnBattle();
+                
+            }
+            
         }
     }
     //reticle anim
@@ -420,6 +449,62 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
     newReticle->StartScaleAnimation();
 
 }
+
+class UdwNodeBattleHUD* AmouseController::startNodeBattleHUD(AdwNode* node)
+{
+    class UdwNodeBattleHUD* NodeBattleHUD = CreateWidget<UdwNodeBattleHUD>(this, NodeBattleHUDClass);
+
+    
+    TMap<UFactionType*, class UdwBattleFactionEntry*> entryFactions;
+    TMap<UFactionType*, int32> factionRegNumbers;
+    TMap<UFactionType*, int32> factionUnitNumbers;
+    for (URegimentType* unit : node->NODE_REGIMENTS)
+    {
+        //if the faction hud type hasnt appeared, create it
+        if (!entryFactions.Contains(unit->associatedFaction))
+        {
+
+            class UdwBattleFactionEntry* NodeBattleFacHUD = CreateWidget<UdwBattleFactionEntry>(this, NodeBattleHUDFactionClass);
+            NodeBattleFacHUD->dwBattleFactionText->SetText(FText::FromString(unit->associatedFaction->Name));
+            if (node->NODE_FACTION_CONTROL.Contains(unit->associatedFaction)) {
+                NodeBattleFacHUD->dwNodeBattleFacControl->SetText(FText::FromString(FString::FromInt(*node->NODE_FACTION_CONTROL.Find(unit->associatedFaction))));
+            }
+            else { NodeBattleFacHUD->dwNodeBattleFacControl->SetText(FText::FromString("0")); }
+            
+            factionRegNumbers.Add(unit->associatedFaction, 1);
+            factionUnitNumbers.Add(unit->associatedFaction, unit->unitAmount);
+
+            NodeBattleHUD->dwFactionEntryScroll->AddChild(NodeBattleFacHUD);
+            entryFactions.Add(unit->associatedFaction, NodeBattleFacHUD);
+        }
+        else {
+            int32* RegNumberPtr = factionRegNumbers.Find(unit->associatedFaction);
+            *RegNumberPtr += 1;
+            int32* unitNumberPtr = factionUnitNumbers.Find(unit->associatedFaction);
+            *unitNumberPtr += unit->unitAmount;
+        }
+
+        class UdwNodeBattleUnitEntryHUD* BattleUnitEntryHUD = CreateWidget<UdwNodeBattleUnitEntryHUD>(this, BattleUnitEntryHUDClass);
+        //relevant info
+        class UdwBattleFactionEntry* factype = *entryFactions.Find(unit->associatedFaction);
+        factype->dwNodeBattleFacUnitScroll->AddChild(BattleUnitEntryHUD);
+    }
+    for (TPair<UFactionType*, class UdwBattleFactionEntry*> pair : entryFactions)
+    {
+        class UdwBattleFactionEntry* factype = pair.Value;
+        int32 numregss = *factionRegNumbers.Find(pair.Key);
+        int32 numunits = *factionUnitNumbers.Find(pair.Key);
+
+        factype->dwNodeBattleFacReg->SetText(FText::FromString(FString::FromInt(numregss)+" Regiments"));
+        factype->dwNodeBattleFacUnits->SetText(FText::FromString(FString::FromInt(numunits) + " Units"));
+    }
+
+
+    NodeBattleHUD->AddToPlayerScreen();
+    return NodeBattleHUD;
+
+}
+
 void AmouseController::Zoom(float Value)
 {
     if (ControlledPawn)
