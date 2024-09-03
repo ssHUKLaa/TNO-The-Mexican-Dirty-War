@@ -39,6 +39,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* nodeImage;
+
+
 	UFactionType() : Name(""), Description(""), Association(-1), totalUnits(0), nodeImage(), factionColour(0,0,0,0){}
 
 	UFactionType(FString curName, FString curDesc, int32 curAssoc, int32 curUnits, UPaperFlipbook* curFlip, FVector4d curColour)
@@ -106,13 +108,13 @@ public:
 	int32 baseTravelableDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 baseTacticsLevel;
+	float baseTacticsLevel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double baseIntelGeneration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 basePower;
+	float basePower;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<URequiredEquipments*> requiredEquipment;
@@ -151,6 +153,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 nodesMovable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 regimentLevel;
 
 	URegimentType() : Name(""), associatedUnit(nullptr), associatedFaction(nullptr),unitAmount(0)  {}
 

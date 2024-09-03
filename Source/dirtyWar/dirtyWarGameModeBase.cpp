@@ -20,78 +20,39 @@ AdirtyWarGameModeBase::AdirtyWarGameModeBase()
 
     GAME_TIMETIMER.Invalidate();
 
-    ConstructorHelpers::FObjectFinder<UTexture2D> Texture1Obj(TEXT("/Game/dwHUD/close0.close0"));
-    ConstructorHelpers::FObjectFinder<UTexture2D> Texture2Obj(TEXT("/Game/dwHUD/close1.close1"));
-    UTexture2D* Texture1 = Texture1Obj.Object;
-    UTexture2D* Texture2 = Texture2Obj.Object;
+    ButtonBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/close0.close0")).Object));
+    ButtonBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/close1.close1")).Object));
 
-    if (Texture1 && Texture2)
-    {
-        FSlateBrush Brush1;
-        Brush1.SetResourceObject(Texture1);
-        Brush1.ImageSize = FVector2D(Texture1->GetSizeX(), Texture1->GetSizeY());
+    frameBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/unitentrything.unitentrything")).Object));
+    frameBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/unitframesel.unitframesel")).Object));
+    
+    unitBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/UnitIcons/mex_dw_soldat_1.mex_dw_soldat_1")).Object));
+    unitBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/UnitIcons/mex_dw_police_1.mex_dw_police_1")).Object));
+    unitBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/UnitIcons/mex_dw_dfs_1.mex_dw_dfs_1")).Object));
+    unitBrushes.Add(setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/UnitIcons/mex_dw_jet_1.mex_dw_jet_1")).Object));
 
-        FSlateBrush Brush2;
-        Brush2.SetResourceObject(Texture2);
-        Brush2.ImageSize = FVector2D(Texture2->GetSizeX(), Texture2->GetSizeY());
+    factionBrushes.Add("Government", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/governmentbig.governmentbig")).Object));
+    factionBrushes.Add("GPG", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/gpgbig.gpgbig")).Object));
+    factionBrushes.Add("FLN", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/flnbig.flnbig")).Object));
+    factionBrushes.Add("Los Tecos", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/los_tecosbig.los_tecosbig")).Object));
+    factionBrushes.Add("PDLP", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/pdlpbig.pdlpbig")).Object));
+    factionBrushes.Add("TBD", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/tbdbig.tbdbig")).Object));
+    factionBrushes.Add("TBDSYN_2", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/tbdsyn2big.tbdsyn2big")).Object));
+    factionBrushes.Add("TBDSYN", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/tbdsynbig.tbdsynbig")).Object));
+    factionBrushes.Add("UNS", setBrushesFromLoad(ConstructorHelpers::FObjectFinder<UTexture2D>(TEXT("/Game/dwHUD/factionIcons/unsbig.unsbig")).Object));
 
-        ButtonBrushes.Add(Brush1);
-        ButtonBrushes.Add(Brush2);
-    }
-
-    ConstructorHelpers::FObjectFinder<UTexture2D> UnitFrame1Obj(TEXT("/Game/dwHUD/unitentrything.unitentrything"));
-    ConstructorHelpers::FObjectFinder<UTexture2D> UnitFrame2Obj(TEXT("/Game/dwHUD/unitframesel.unitframesel"));
-
-    UTexture2D* fT1 = UnitFrame1Obj.Object;
-    UTexture2D* fT2 = UnitFrame2Obj.Object;
-
-    if (fT1 && fT2) {
-        
-        FSlateBrush Brush1;
-        Brush1.SetResourceObject(fT1);
-        Brush1.ImageSize = FVector2D(fT1->GetSizeX(), fT1->GetSizeY());
-
-        FSlateBrush Brush2;
-        Brush2.SetResourceObject(fT2);
-        Brush2.ImageSize = FVector2D(fT2->GetSizeX(), fT2->GetSizeY());
-
-        frameBrushes.Add(Brush1);
-        frameBrushes.Add(Brush2);
-    }
-
-    ConstructorHelpers::FObjectFinder<UTexture2D> soldierObj(TEXT("/Game/dwHUD/UnitIcons/mex_dw_soldat_1.mex_dw_soldat_1"));
-    ConstructorHelpers::FObjectFinder<UTexture2D> policeObj(TEXT("/Game/dwHUD/UnitIcons/mex_dw_police_1.mex_dw_police_1"));
-    ConstructorHelpers::FObjectFinder<UTexture2D> dfsObj(TEXT("/Game/dwHUD/UnitIcons/mex_dw_dfs_1.mex_dw_dfs_1"));
-    ConstructorHelpers::FObjectFinder<UTexture2D> jetObj(TEXT("/Game/dwHUD/UnitIcons/mex_dw_jet_1.mex_dw_jet_1"));
-    UTexture2D* soldierTexture = soldierObj.Object;
-    UTexture2D* policeTexture = policeObj.Object;
-    UTexture2D* dfsTexture = dfsObj.Object;
-    UTexture2D* jetTexture = jetObj.Object;
-
-    if (soldierTexture && policeTexture && dfsTexture && jetTexture)
-    {
-        FSlateBrush Brush1;
-        FSlateBrush Brush2;
-        FSlateBrush Brush3;
-        FSlateBrush Brush4;
-
-        Brush1.SetResourceObject(soldierTexture);
-        Brush1.ImageSize = FVector2D(soldierTexture->GetSizeX(), soldierTexture->GetSizeY());
-        Brush2.SetResourceObject(policeTexture);
-        Brush2.ImageSize = FVector2D(policeTexture->GetSizeX(), policeTexture->GetSizeY());
-        Brush3.SetResourceObject(dfsTexture);
-        Brush3.ImageSize = FVector2D(dfsTexture->GetSizeX(), dfsTexture->GetSizeY());
-        Brush4.SetResourceObject(jetTexture);
-        Brush4.ImageSize = FVector2D(jetTexture->GetSizeX(), jetTexture->GetSizeY());
-
-        unitBrushes.Add(Brush1);
-        unitBrushes.Add(Brush2);
-        unitBrushes.Add(Brush3);
-        unitBrushes.Add(Brush4);
-
-    }
 }
-
+FSlateBrush AdirtyWarGameModeBase::setBrushesFromLoad(UTexture2D* texture)
+{
+    if (texture)
+    {
+        FSlateBrush Brush1;
+        Brush1.SetResourceObject(texture);
+        Brush1.ImageSize = FVector2D(texture->GetSizeX(), texture->GetSizeY());
+        return Brush1;
+    }
+    return FSlateBrush();
+}
 void AdirtyWarGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -114,6 +75,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     Govn->totalUnits = 0;
     Govn->nodeImage = LoadObject<UPaperFlipbook>(nullptr, TEXT("/Game/nodeImages/marker_green/marker_green_flipbook.marker_green_flipbook"));
     Govn->factionColour = FVector4d(0.099899, 0.571125, 0.53948, 0.5);
+
 
     // Create GPG faction
     UFactionType* GPG = NewObject<UFactionType>();
@@ -169,7 +131,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     soldier_unit->unitEntryIcon = unitBrushes[0];
 
     UUnitType* police_unit = NewObject<UUnitType>();
-    police_unit->Name = "police";
+    police_unit->Name = "Police";
     police_unit->Description = "WIP";
     police_unit->techLevel = 1;
     police_unit->healthPoints = 50;
@@ -193,14 +155,14 @@ void AdirtyWarGameModeBase::BeginPlay()
     dfs_unit->unitEntryIcon = unitBrushes[2];
 
     UUnitType* jet_unit = NewObject<UUnitType>();
-    jet_unit->Name = "DFS";
+    jet_unit->Name = "Jet";
     jet_unit->Description = "WIP";
     jet_unit->techLevel = 1;
-    jet_unit->healthPoints = 50;
-    jet_unit->baseTravelableDistance = 4;
-    jet_unit->baseTacticsLevel = 0.8;
-    jet_unit->baseIntelGeneration = 1;
-    jet_unit->basePower = 0.7;
+    jet_unit->healthPoints = 5;
+    jet_unit->baseTravelableDistance = 20;
+    jet_unit->baseTacticsLevel = 1.5;
+    jet_unit->baseIntelGeneration = 2;
+    jet_unit->basePower = 5;
     jet_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1) };
     jet_unit->unitEntryIcon = unitBrushes[3];
 
@@ -410,10 +372,11 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                             URegimentType* newReg = NewObject<URegimentType>();
                             newReg->Name = "test";
                             newReg->associatedUnit = GAME_allUnitTypes[1];
-                            newReg->unitAmount = 20;
+                            newReg->unitAmount = FMath::RandRange(1,50);
                             newReg->associatedFaction = *govnthingy;
                             newReg->PercentOrganized = 100;
                             newReg->nodesMovable = GAME_allUnitTypes[1]->baseTravelableDistance;
+                            newReg->regimentLevel = 1;
                             connedNode->addNewUnit(newReg);
                         }
                     }
@@ -465,15 +428,16 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
 
         for (AdwNode* node : DWNodes)
         {
-            if (node->NODE_REGIMENTS.Num() == 0)
+            if (node->NODE_REGIMENTS.Num() == 0 && node->NODE_TYPE!=1 && ShouldHappen(70))
             {
                 URegimentType* newReg = NewObject<URegimentType>();
                 newReg->Name = "test";
                 newReg->associatedUnit = GAME_allUnitTypes[0];
-                newReg->unitAmount = 20;
+                newReg->unitAmount = FMath::RandRange(1, 50);
                 newReg->associatedFaction = *GAME_allFactions.Find("GPG");
                 newReg->PercentOrganized = 100;
                 newReg->nodesMovable = GAME_allUnitTypes[0]->baseTravelableDistance;
+                newReg->regimentLevel = 1;
                 node->addNewUnit(newReg);
             }
             for (int32 connid : node->NODE_CONNECTIONS)
@@ -610,13 +574,15 @@ void AdirtyWarGameModeBase::moveUnits()
         {
             
             AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
-            if (unitline.NodeDistances.Num() > 1) {
+            if (unitline.NodeDistances.Num() > 1 && unitline.RegimentType->nodesMovable>0) {
                 UE_LOG(LogTemp, Warning, TEXT("unit moving now from %s"), *nextOne.Node->NODE_NAME);
                 nextOne.Node->NODE_REGIMENTS.Remove(unitline.RegimentType);
                 unitline.NodeDistances.RemoveAt(0);
                 nextOne.Node->NODE_REGIMENTS.Add(unitline.RegimentType);
-                UE_LOG(LogTemp, Warning, TEXT("to %s"), *nextOne.Node->NODE_NAME);
 
+                UE_LOG(LogTemp, Warning, TEXT("to %s"), *nextOne.Node->NODE_NAME);
+                unitline.RegimentType->nodesMovable -= 1;
+                UE_LOG(LogTemp, Warning, TEXT("nodesmovable: %d"), unitline.RegimentType->nodesMovable);
                 TArray<UFactionType*> facs;
 
                 for (URegimentType* reg : nextOne.Node->NODE_REGIMENTS)
@@ -629,7 +595,7 @@ void AdirtyWarGameModeBase::moveUnits()
                 if (facs.Num() > 1)
                 {
                     //2 factions in node, start battle
-                    GAME_nodesInBattle.Add(nextOne.Node);
+                    GAME_nodesInBattle.Add(nextOne.Node, FnodeInBattleValues(FGameDate(0,0,4,0),0,50));
                     PlayerController->NodeClicked(nextOne.Node);
                     
 
@@ -666,6 +632,156 @@ void AdirtyWarGameModeBase::moveUnits()
 
 }
 
+void AdirtyWarGameModeBase::startNodeBattles()
+{
+    for (TPair<AdwNode*, FnodeInBattleValues>& pair : GAME_nodesInBattle)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("time %d %d"), pair.Value.timeTillNextPhase.day, pair.Value.timeTillNextPhase.hour);
+        if (pair.Value.timeTillNextPhase.hour == 0 && pair.Value.timeTillNextPhase.day == 0 && pair.Value.timeTillNextPhase.month == 0 && pair.Value.timeTillNextPhase.year == 0)
+        {
+            TArray<URegimentType*> firstGroup{};
+            TArray<URegimentType*> secondGroup{};
+
+            TArray<URegimentType*> govnunit{};
+            TArray<URegimentType*> redunit{};
+            TArray<URegimentType*> brownunit{};
+
+            for (URegimentType* unit : pair.Key->NODE_REGIMENTS)
+            {
+                if (unit->associatedFaction->Association == 0)
+                {
+                    govnunit.Add(unit);
+                }
+                else if (unit->associatedFaction->Association == 1)
+                {
+                    redunit.Add(unit);
+                }
+                else if (unit->associatedFaction->Association == 2)
+                {
+                    brownunit.Add(unit);
+                }
+            }
+            if (govnunit.Num() > 0)
+            {
+                for (URegimentType* unit : govnunit)
+                {
+                    firstGroup.Add(unit);
+                }
+                for (URegimentType* unit : redunit)
+                {
+                    secondGroup.Add(unit);
+                }
+                for (URegimentType* unit : brownunit)
+                {
+                    secondGroup.Add(unit);
+                }
+            }
+            else if (redunit.Num()>0 && brownunit.Num()>0)
+            {
+                
+                for (URegimentType* unit : redunit)
+                {
+                    firstGroup.Add(unit);
+                }
+                for (URegimentType* unit : brownunit)
+                {
+                    secondGroup.Add(unit);
+                }
+            }
+            else if (redunit.Num() > 0) //TODO
+            {
+                
+            }
+            else if (brownunit.Num() > 0) //TODO
+            {
+
+            }
+
+            //Actual Damage calc
+            float firstGroupDmg = 0;
+            float secondGroupDmg = 0;
+            
+            for (URegimentType* unit : firstGroup)
+            {
+                firstGroupDmg += calcUnitDmg(unit);
+            }
+            for (URegimentType* unit : secondGroup)
+            {
+                secondGroupDmg += calcUnitDmg(unit);
+            }
+
+            
+            float accdmg = firstGroupDmg / secondGroup.Num();
+            for (URegimentType* unit : secondGroup)
+            {
+                float thisdmg = accdmg;
+                while (thisdmg > 0 && unit->unitAmount > 0)
+                {
+                    thisdmg -= unit->associatedUnit->healthPoints;
+                    unit->unitAmount -= 1;
+
+                    if (unit->unitAmount <= 0)
+                    {
+                        unit->unitAmount = 0;
+                        pair.Key->NODE_REGIMENTS.Remove(unit);
+                        cleanUpUnitRefs(unit);
+
+
+                        break;
+                    }
+                }
+            }
+
+            AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+            if (PlayerController->selectedNode == pair.Key)
+            {
+                if (PlayerController->NodeBattleHUDSelected)
+                {
+                    PlayerController->NodeBattleHUDSelected->RemoveFromParent();
+                    PlayerController->NodeBattleHUDSelected = nullptr;
+                }
+                PlayerController->NodeBattleHUDSelected = PlayerController->startNodeBattleHUD(pair.Key);
+            }
+
+            pair.Value.timeTillNextPhase = FGameDate(0, 0, 4, 0);
+            pair.Value.phase += 1;
+            pair.Value.sideOneWinning = 50; //TODO
+        }
+        else
+        {
+            decrementFGameDate(pair.Value.timeTillNextPhase);
+        }
+    }
+}
+void AdirtyWarGameModeBase::cleanUpUnitRefs(URegimentType* unit)
+{
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    for (int32 i = GAME_movingUnits.Num() - 1; i >= 0; i--)
+    {
+        if (GAME_movingUnits[i].RegimentType == unit)
+        {
+            GAME_movingUnits.RemoveAt(i);
+            break;
+        }
+    }
+    if (PlayerController->player_AllUnits.Contains(unit))
+    {
+        PlayerController->player_AllUnits.Remove(unit);
+    }
+
+    unit->ConditionalBeginDestroy();
+}
+float AdirtyWarGameModeBase::calcUnitDmg(URegimentType* unit)
+{
+    float basepower = unit->associatedUnit->basePower * unit->unitAmount;
+    basepower *= unit->associatedUnit->techLevel;
+    basepower *= unit->associatedUnit->baseTacticsLevel;
+    basepower *= FMath::Exp(unit->associatedUnit->techLevel);
+    float diceRoll = FMath::Sqrt(FMath::RandRange(1, 6));
+
+    basepower *= diceRoll;
+    return basepower;
+}
 bool AdirtyWarGameModeBase::ShouldHappen(int percentage)
 {
     return (FMath::RandRange(1, 100 / percentage) == 1 ? true : false);
@@ -674,6 +790,7 @@ bool AdirtyWarGameModeBase::ShouldHappen(int percentage)
 void AdirtyWarGameModeBase::GAME_ONHOURLY()
 {
     moveUnits();
+    startNodeBattles();
 }
 void AdirtyWarGameModeBase::GAME_ONDAILY()
 {

@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "dwNode.h"
 #include "HUD/dwNodeNameWidget.h"
+#include "HUD/dwNodeBattleHUD.h"
 #include "Engine/DataTable.h"
 #include "dwNodeConnection.h"
 #include "dirtyWarGameModeBase.generated.h"
@@ -90,6 +91,35 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FnodeInBattleValues
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameDate timeTillNextPhase;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 phase;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 sideOneWinning;
+
+	FnodeInBattleValues()
+		: timeTillNextPhase(0, 0, 0, 0), phase(0), sideOneWinning(0)
+	{
+	}
+
+	FnodeInBattleValues(FGameDate timeTillNextPhase, int32 phase, int32 sideOneWinning)
+		: timeTillNextPhase(timeTillNextPhase)
+		, phase(phase)
+		, sideOneWinning(sideOneWinning)
+	{
+	}
+};
+
 
 UCLASS()
 class DIRTYWAR_API AdirtyWarGameModeBase : public AGameModeBase
@@ -103,13 +133,22 @@ private:
 public:
 	AdirtyWarGameModeBase();
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	FSlateBrush setBrushesFromLoad(UTexture2D* helper);
+
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	float calcUnitDmg(URegimentType* unit);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FSlateBrush> ButtonBrushes;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString,FSlateBrush> factionBrushes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FSlateBrush> frameBrushes;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FSlateBrush> unitBrushes;
 
 	bool GAME_UNPAUSED = false;
@@ -150,7 +189,7 @@ public:
 	int GAME_endYear = 1975;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<AdwNode*> GAME_nodesInBattle;
+	TMap<AdwNode*, FnodeInBattleValues> GAME_nodesInBattle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString,UFactionType*> GAME_allFactions = {};
@@ -184,6 +223,10 @@ public:
 	void decrementFGameDate(FGameDate& date);
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void moveUnits();
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void startNodeBattles();
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void cleanUpUnitRefs(URegimentType* unit);
 
 
 

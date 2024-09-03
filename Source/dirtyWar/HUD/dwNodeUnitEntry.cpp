@@ -41,7 +41,10 @@ void UdwNodeUnitEntry::setUnitNameText(FString nameText,FString unitType, int32 
 
 void UdwNodeUnitEntry::setTravelableProgBar()
 {
-	TravelableNodeDistBar->SetPercent((associatedRegiment->nodesMovable) / (associatedRegiment->associatedUnit->baseTravelableDistance));
+	
+	float p = static_cast<float>(associatedRegiment->nodesMovable) / static_cast<float>(associatedRegiment->associatedUnit->baseTravelableDistance);
+	UE_LOG(LogTemp, Error, TEXT("nodes movable: %f"), p);
+	TravelableNodeDistBar->SetPercent(p);
 }
 void UdwNodeUnitEntry::setUnitImage()
 {
@@ -51,7 +54,7 @@ void UdwNodeUnitEntry::setUnitImage()
 void UdwNodeUnitEntry::onUnitEntrySelected()
 {
 	AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
-	if (associatedRegiment->associatedFaction == *YourGameMode->GAME_allFactions.Find("Govn"))
+	if (associatedRegiment->associatedFaction == *YourGameMode->GAME_allFactions.Find("Govn") && (associatedRegiment->nodesMovable > 0))
 	{
 		entrySelected = !entrySelected;
 		int intbool = entrySelected ? 1 : 0;
@@ -104,7 +107,7 @@ void UdwNodeUnitEntry::onUnitEntrySelected()
 void UdwNodeUnitEntry::onUnitEntryHovered()
 {
 	AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
-	if (associatedRegiment->associatedFaction == *YourGameMode->GAME_allFactions.Find("Govn"))
+	if (associatedRegiment->associatedFaction == *YourGameMode->GAME_allFactions.Find("Govn") && (associatedRegiment->nodesMovable>0))
 	{
 		TArray<FSlateBrush> imgBrush = YourGameMode->frameBrushes;
 
@@ -115,7 +118,7 @@ void UdwNodeUnitEntry::onUnitEntryHovered()
 void UdwNodeUnitEntry::onUnitEntryUnHovered()
 {
 	AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
-	if (associatedRegiment->associatedFaction == *YourGameMode->GAME_allFactions.Find("Govn"))
+	if (associatedRegiment->associatedFaction == *YourGameMode->GAME_allFactions.Find("Govn") && (associatedRegiment->nodesMovable > 0))
 	{
 		if (!entrySelected) {
 

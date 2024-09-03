@@ -56,7 +56,7 @@ public:
 	class UdwOnNodeClickWidget* NodeClickedHUD;
 	bool overHUD = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	class UdwNodeBattleHUD* NodeBattleHUDSelected;
 
 	UPROPERTY(EditAnywhere)

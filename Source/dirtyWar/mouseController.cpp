@@ -174,6 +174,8 @@ void AmouseController::HandleRightClick()
                             break; 
                         }
                     }
+
+                    //turn conn green
                     for (int32 i = 0; i < listOfNodes.Num() - 1; ++i)
                     {
                         FNodeDistancePair& nodepair = listOfNodes[i];
@@ -193,9 +195,7 @@ void AmouseController::HandleRightClick()
                     FRegimentMovementData unitDistList = { Pair.Key,listOfNodes };
                     YourGameMode->GAME_movingUnits.Add(unitDistList);
                 }
-
-                //draw 
-
+                //deselect all units
                 player_AllUnits.Empty();
                 NodeClickedHUD->SetNodeUnits(selectedNode->NODE_REGIMENTS, this);
             }
@@ -454,7 +454,7 @@ void AmouseController::NodeClicked(AdwNode* NodeID)
 class UdwNodeBattleHUD* AmouseController::startNodeBattleHUD(AdwNode* node)
 {
     class UdwNodeBattleHUD* NodeBattleHUD = CreateWidget<UdwNodeBattleHUD>(this, NodeBattleHUDClass);
-
+    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
     
     TMap<UFactionType*, class UdwBattleFactionEntry*> entryFactions;
     TMap<UFactionType*, int32> factionRegNumbers;
@@ -467,15 +467,50 @@ class UdwNodeBattleHUD* AmouseController::startNodeBattleHUD(AdwNode* node)
 
             class UdwBattleFactionEntry* NodeBattleFacHUD = CreateWidget<UdwBattleFactionEntry>(this, NodeBattleHUDFactionClass);
             NodeBattleFacHUD->dwBattleFactionText->SetText(FText::FromString(unit->associatedFaction->Name));
+            NodeBattleFacHUD->dwBattleFactionText->SetColorAndOpacity(FSlateColor(FLinearColor(
+                unit->associatedFaction->factionColour.X,
+                unit->associatedFaction->factionColour.Y,
+                unit->associatedFaction->factionColour.Z,1)));
+            NodeBattleFacHUD->dwNodeBattleFactionImg->SetBrush(*YourGameMode->factionBrushes.Find(unit->associatedFaction->Name));
             if (node->NODE_FACTION_CONTROL.Contains(unit->associatedFaction)) {
-                NodeBattleFacHUD->dwNodeBattleFacControl->SetText(FText::FromString(FString::FromInt(*node->NODE_FACTION_CONTROL.Find(unit->associatedFaction))));
+                NodeBattleFacHUD->dwNodeBattleFacControl->SetText(FText::FromString(FString::FromInt(*node->NODE_FACTION_CONTROL.Find(unit->associatedFaction)) + "% Control"));
             }
-            else { NodeBattleFacHUD->dwNodeBattleFacControl->SetText(FText::FromString("0")); }
+            else { NodeBattleFacHUD->dwNodeBattleFacControl->SetText(FText::FromString("0% Control")); }
             
             factionRegNumbers.Add(unit->associatedFaction, 1);
             factionUnitNumbers.Add(unit->associatedFaction, unit->unitAmount);
+            //ensure govn is always at the top
+            if (unit->associatedFaction == *YourGameMode->GAME_allFactions.Find("Govn"))
+            {
+                if (NodeBattleHUD && NodeBattleHUD->dwFactionEntryScroll && NodeBattleFacHUD)
+                {
+                    TArray<UWidget*> WidgetChildren = NodeBattleHUD->dwFactionEntryScroll->GetAllChildren();
 
-            NodeBattleHUD->dwFactionEntryScroll->AddChild(NodeBattleFacHUD);
+                    TArray<UdwBattleFactionEntry*> classssChildren;
+
+                    classssChildren.Add(NodeBattleFacHUD);
+
+                    for (UWidget* WidgetChild : WidgetChildren)
+                    {
+                        if (UdwBattleFactionEntry* BattleFactionEntry = Cast<UdwBattleFactionEntry>(WidgetChild))
+                        {
+                            classssChildren.Add(BattleFactionEntry);
+                        }
+                    }
+
+                    NodeBattleHUD->dwFactionEntryScroll->ClearChildren();
+
+                    for (UdwBattleFactionEntry* Child : classssChildren)
+                    {
+                        NodeBattleHUD->dwFactionEntryScroll->AddChild(Child);
+                    }
+                }
+            }
+            else
+            {
+                NodeBattleHUD->dwFactionEntryScroll->AddChild(NodeBattleFacHUD);
+            }
+            
             entryFactions.Add(unit->associatedFaction, NodeBattleFacHUD);
         }
         else {
@@ -486,6 +521,8 @@ class UdwNodeBattleHUD* AmouseController::startNodeBattleHUD(AdwNode* node)
         }
 
         class UdwNodeBattleUnitEntryHUD* BattleUnitEntryHUD = CreateWidget<UdwNodeBattleUnitEntryHUD>(this, BattleUnitEntryHUDClass);
+        BattleUnitEntryHUD->setupUnitName(unit->Name);
+        BattleUnitEntryHUD->setupUnitsAndOrganization(unit->unitAmount,unit->PercentOrganized);
         //relevant info
         class UdwBattleFactionEntry* factype = *entryFactions.Find(unit->associatedFaction);
         factype->dwNodeBattleFacUnitScroll->AddChild(BattleUnitEntryHUD);
