@@ -130,7 +130,10 @@ private:
 	FTimerHandle GAME_TIMETIMER;
 	int DaysPassed = 0;
 
+
+
 public:
+
 	AdirtyWarGameModeBase();
 
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
@@ -138,6 +141,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	float calcUnitDmg(URegimentType* unit);
+
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	float GetDistanceBetweenNodes(AdwNode* Node1, AdwNode* Node2);
+
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	FGameDate convertDistToGameTime(float dist);
+
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	TArray<FNodeDistancePair> utilAStarSearch(AdwNode* Start, AdwNode* End);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FSlateBrush> ButtonBrushes;
@@ -220,9 +232,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void GenerateIntel();
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
-	void decrementFGameDate(FGameDate& date);
+	void decrementFGameDate(FGameDate& date, const FGameDate& amount);
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void moveUnits();
+
+	UFUNCTION(BlueprintCallable, Category = "My Functions")
+	void createUnitPath(AdwNode* ClickedNode, AmouseController* control);
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	void startNodeBattles();
 	UFUNCTION(BlueprintCallable, Category = "My Functions")

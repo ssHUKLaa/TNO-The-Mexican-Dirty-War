@@ -160,44 +160,7 @@ void AmouseController::HandleRightClick()
         {
             if (selectedNode != ClickedNode) {
                 AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
-                for (TPair<URegimentType*, AdwNode*> Pair : player_AllUnits)
-                {
-                    TArray<FNodeDistancePair> listOfNodes = utilAStarSearch(Pair.Value, ClickedNode, YourGameMode);
-                    
-                    //if unit is moving somewhere else, get rid of its current path and replace it with a new one
-                    for (auto It = YourGameMode->GAME_movingUnits.CreateIterator(); It; ++It) 
-                    {
-                        FRegimentMovementData& UnitDistInst = *It;
-                        if (UnitDistInst.RegimentType == Pair.Key)
-                        {
-                            It.RemoveCurrent();
-                            break; 
-                        }
-                    }
-
-                    //turn conn green
-                    for (int32 i = 0; i < listOfNodes.Num() - 1; ++i)
-                    {
-                        FNodeDistancePair& nodepair = listOfNodes[i];
-                        AdwNode* node = nodepair.Node;
-                        AdwNode* nextNode;
-
-                        FNodeDistancePair& nextNodepair = listOfNodes[i + 1];
-                        nextNode = nextNodepair.Node;
-                        AdwNodeConnection** connactorptr = node->NODE_CONNECTIONACTORS.Find(nextNode);
-                        if (connactorptr)
-                        {
-                            AdwNodeConnection* connactor = *connactorptr;
-                            connactor->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), FVector4d(0.086, 0.729, 0.129, 0.8));
-                            connectionsMovingUnit.Add(node);
-                        }
-                    }
-                    FRegimentMovementData unitDistList = { Pair.Key,listOfNodes };
-                    YourGameMode->GAME_movingUnits.Add(unitDistList);
-                }
-                //deselect all units
-                player_AllUnits.Empty();
-                NodeClickedHUD->SetNodeUnits(selectedNode->NODE_REGIMENTS, this);
+                YourGameMode->createUnitPath(ClickedNode, this);
             }
         }
         else {
@@ -206,95 +169,9 @@ void AmouseController::HandleRightClick()
     }
 }
 
-TArray<FNodeDistancePair> AmouseController::utilAStarSearch(AdwNode* Start, AdwNode* End, AdirtyWarGameModeBase* YourGameMode)
-{
-    
-
-    TArray<FNodeDistancePair> Path;
-    if (!Start || !End)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Start or End node is null"));
-        return Path;
-    }
-
-    TPriorityQueue<AdwNode*> OpenList;
-    TMap<AdwNode*, AdwNode*> CameFrom;
-    TMap<AdwNode*, float> CostSoFar;
-
-    OpenList.Push(Start, 0);
-    CameFrom.Add(Start, nullptr);
-    CostSoFar.Add(Start, 0);
-
-    while (!OpenList.IsEmpty())
-    {
-        AdwNode* Current = OpenList.Pop();
-
-        if (Current == End)
-        {
-            // Reconstruct path
-            AdwNode* Node = Current;
-            AdwNode* PreviousNode = nullptr;
-            while (Node)
-            {
-                float DistanceToNextNode = PreviousNode ? GetDistanceBetweenNodes(Node, PreviousNode) : 0.0f;
-                Path.Insert(FNodeDistancePair(Node, convertDistToGameTime(DistanceToNextNode)), 0); // Insert at the beginning of the array
-                PreviousNode = Node;
-                Node = CameFrom.Contains(Node) ? CameFrom[Node] : nullptr;
-            }
-            return Path;
-        }
-
-        for (int32 ConnectionID : Current->NODE_CONNECTIONS)
-        {
-            AdwNode* Neighbor = YourGameMode->IDNodeMap.Contains(ConnectionID) ? YourGameMode->IDNodeMap[ConnectionID] : nullptr;
-            if (!Neighbor)
-            {
-                continue;
-            }
-
-            float NewCost = CostSoFar[Current] + GetDistanceBetweenNodes(Current, Neighbor);
-
-            if (!CostSoFar.Contains(Neighbor) || NewCost < CostSoFar[Neighbor])
-            {
-                CostSoFar.Add(Neighbor, NewCost);
-                float Priority = NewCost + GetDistanceBetweenNodes(Neighbor, End);
-                OpenList.Push(Neighbor, Priority);
-                CameFrom.Add(Neighbor, Current);
-            }
-        }
-    }
-
-    // No path found
-    return Path;
-}
-FGameDate AmouseController::convertDistToGameTime(float dist)
-{
-    UE_LOG(LogTemp, Warning, TEXT("dist: %f"), dist);
-    int32 totalHours = dist / 9.0f; //arb number - each hour equals 9 units of distance
-    int32 years, months, days, remainingHours;
-
-    years = totalHours / (24 * 365);
-    int32 remainingHoursAfterYears = totalHours % (24 * 365);
-    months = remainingHoursAfterYears / (24 * 30);
-    int32 remainingHoursAfterMonths = remainingHoursAfterYears % (24 * 30);
-
-    days = remainingHoursAfterMonths / 24;
-
-    remainingHours = remainingHoursAfterMonths % 24;
 
 
-    FGameDate GameDate(years, months, days, remainingHours);
-    UE_LOG(LogTemp, Warning, TEXT("unit movement Game Time: %d years -%d months-%d days %d hours"), GameDate.year, GameDate.month, GameDate.day, GameDate.hour);
-    return GameDate;
-}
-float AmouseController::GetDistanceBetweenNodes(AdwNode* Node1, AdwNode* Node2)
-{
-    if (Node1 && Node2)
-    {
-        return FVector::Dist(Node1->GetActorLocation(), Node2->GetActorLocation());
-    }
-    return TNumericLimits<float>::Max();
-}
+
 
 void AmouseController::HandleClick()
 {

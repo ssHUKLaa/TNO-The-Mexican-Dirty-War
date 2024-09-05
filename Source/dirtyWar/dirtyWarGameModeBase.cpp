@@ -7,6 +7,7 @@
 #include "HUD/dwNodeNameWidget.h"
 #include "HUD/dwNodeUnitEntry.h"
 #include "nodeStruct.h"
+#include "util/PriorityQueue.cpp"
 
 
 
@@ -527,40 +528,97 @@ void AdirtyWarGameModeBase::GenerateIntel()
 
     UE_LOG(LogTemp, Error, TEXT("finish GenerateIntel, sel intel: %d"), PlayerController->selectedNode->NODE_INTEL);
 }
-void AdirtyWarGameModeBase::decrementFGameDate(FGameDate& date)
+void AdirtyWarGameModeBase::decrementFGameDate(FGameDate& date, const FGameDate& amount)
 {
-    if (date.hour > 0)
+    // Decrement hours
+    if (date.hour >= amount.hour)
     {
-        date.hour--;
+        date.hour -= amount.hour;
     }
     else
     {
+        // Borrow a day if hour goes below 0
         if (date.day > 0)
         {
             date.day--;
-            date.hour = 23;
+            date.hour = (date.hour + 24) - amount.hour; // Handle hour underflow
+        }
+        else if (date.month > 0)
+        {
+            date.month--;
+            date.day = 29; // Assume 30 days in the previous month for simplicity
+            date.hour = (date.hour + 24) - amount.hour;
+        }
+        else if (date.year > 0)
+        {
+            date.year--;
+            date.month = 11; // Assume December (previous month)
+            date.day = 29;   // Assume 30 days in the previous month
+            date.hour = (date.hour + 24) - amount.hour;
         }
         else
         {
-            if (date.month > 0) 
-            {
-                date.month--;
-                
-                date.day = 30; 
-                date.hour = 23;
-            }
-            else
-            {
-                if (date.year > 0)
-                {
-                    date.year--;
-                    date.month = 12; 
-                    date.day = 30;   
-                    date.hour = 23;
-                }
-            }
+            date.hour = 0; // Clamp to 0 if no more days left to borrow from
         }
     }
+
+    // Decrement days
+    if (date.day >= amount.day)
+    {
+        date.day -= amount.day;
+    }
+    else
+    {
+        // Borrow a month if day goes below 0
+        if (date.month > 0)
+        {
+            date.month--;
+            date.day = (date.day + 30) - amount.day; // Assume 30 days in the previous month
+        }
+        else if (date.year > 0)
+        {
+            date.year--;
+            date.month = 11; // Assume December
+            date.day = (date.day + 30) - amount.day;
+        }
+        else
+        {
+            date.day = 0; // Clamp to 0 if no more months left to borrow from
+        }
+    }
+
+    // Decrement months
+    if (date.month >= amount.month)
+    {
+        date.month -= amount.month;
+    }
+    else
+    {
+        // Borrow a year if month goes below 0
+        if (date.year > 0)
+        {
+            date.year--;
+            date.month = (date.month + 12) - amount.month; // Handle month underflow
+        }
+        else
+        {
+            date.month = 0; // Clamp to 0 if no more years left to borrow from
+        }
+    }
+
+    // Decrement years
+    if (date.year >= amount.year)
+    {
+        date.year -= amount.year;
+    }
+    else
+    {
+        date.year = 0; // Clamp to 0, as year cannot be negative
+    }
+
+    // Log the updated date
+    UE_LOG(LogTemp, Log, TEXT("Updated Date: Year=%d, Month=%d, Day=%d, Hour=%d"), date.year, date.month, date.day, date.hour);
+
 }
 void AdirtyWarGameModeBase::moveUnits()
 {
@@ -626,12 +684,142 @@ void AdirtyWarGameModeBase::moveUnits()
             PlayerController->NodeClickedHUD->SetNodeUnits(PlayerController->selectedNode->NODE_REGIMENTS, PlayerController);
         }
         else if (!GAME_nodesInBattle.Contains(nextOne.Node)){ // if not in battle, start decrementing down when move
-            decrementFGameDate(nextOne.Distance);
+            decrementFGameDate(nextOne.Distance,FGameDate(0,0,0,1));
         }
     }
 
 }
+FGameDate AdirtyWarGameModeBase::convertDistToGameTime(float dist)
+{
+    UE_LOG(LogTemp, Warning, TEXT("dist: %f"), dist);
+    int32 totalHours = dist / 9.0f; //arb number - each hour equals 9 units of distance
+    int32 years, months, days, remainingHours;
 
+    years = totalHours / (24 * 365);
+    int32 remainingHoursAfterYears = totalHours % (24 * 365);
+    months = remainingHoursAfterYears / (24 * 30);
+    int32 remainingHoursAfterMonths = remainingHoursAfterYears % (24 * 30);
+
+    days = remainingHoursAfterMonths / 24;
+
+    remainingHours = remainingHoursAfterMonths % 24;
+
+
+    FGameDate GameDate(years, months, days, remainingHours);
+    UE_LOG(LogTemp, Warning, TEXT("unit movement Game Time: %d years -%d months-%d days %d hours"), GameDate.year, GameDate.month, GameDate.day, GameDate.hour);
+    return GameDate;
+}
+TArray<FNodeDistancePair> AdirtyWarGameModeBase::utilAStarSearch(AdwNode* Start, AdwNode* End)
+{
+
+
+    TArray<FNodeDistancePair> Path;
+    if (!Start || !End)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Start or End node is null"));
+        return Path;
+    }
+
+    TPriorityQueue<AdwNode*> OpenList;
+    TMap<AdwNode*, AdwNode*> CameFrom;
+    TMap<AdwNode*, float> CostSoFar;
+
+    OpenList.Push(Start, 0);
+    CameFrom.Add(Start, nullptr);
+    CostSoFar.Add(Start, 0);
+
+    while (!OpenList.IsEmpty())
+    {
+        AdwNode* Current = OpenList.Pop();
+
+        if (Current == End)
+        {
+            // Reconstruct path
+            AdwNode* Node = Current;
+            AdwNode* PreviousNode = nullptr;
+            while (Node)
+            {
+                float DistanceToNextNode = PreviousNode ? GetDistanceBetweenNodes(Node, PreviousNode) : 0.0f;
+                Path.Insert(FNodeDistancePair(Node, convertDistToGameTime(DistanceToNextNode)), 0); // Insert at the beginning of the array
+                PreviousNode = Node;
+                Node = CameFrom.Contains(Node) ? CameFrom[Node] : nullptr;
+            }
+            return Path;
+        }
+
+        for (int32 ConnectionID : Current->NODE_CONNECTIONS)
+        {
+            AdwNode* Neighbor = IDNodeMap.Contains(ConnectionID) ? IDNodeMap[ConnectionID] : nullptr;
+            if (!Neighbor)
+            {
+                continue;
+            }
+
+            float NewCost = CostSoFar[Current] + GetDistanceBetweenNodes(Current, Neighbor);
+
+            if (!CostSoFar.Contains(Neighbor) || NewCost < CostSoFar[Neighbor])
+            {
+                CostSoFar.Add(Neighbor, NewCost);
+                float Priority = NewCost + GetDistanceBetweenNodes(Neighbor, End);
+                OpenList.Push(Neighbor, Priority);
+                CameFrom.Add(Neighbor, Current);
+            }
+        }
+    }
+
+    // No path found
+    return Path;
+}
+float AdirtyWarGameModeBase::GetDistanceBetweenNodes(AdwNode* Node1, AdwNode* Node2)
+{
+    if (Node1 && Node2)
+    {
+        return FVector::Dist(Node1->GetActorLocation(), Node2->GetActorLocation());
+    }
+    return TNumericLimits<float>::Max();
+}
+void AdirtyWarGameModeBase::createUnitPath(AdwNode* ClickedNode,AmouseController* control)
+{
+
+    for (TPair<URegimentType*, AdwNode*> Pair : control->player_AllUnits)
+    {
+        TArray<FNodeDistancePair> listOfNodes = utilAStarSearch(Pair.Value, ClickedNode);
+
+        //if unit is moving somewhere else, get rid of its current path and replace it with a new one
+        for (auto It = GAME_movingUnits.CreateIterator(); It; ++It)
+        {
+            FRegimentMovementData& UnitDistInst = *It;
+            if (UnitDistInst.RegimentType == Pair.Key)
+            {
+                It.RemoveCurrent();
+                break;
+            }
+        }
+
+        //turn conn green
+        for (int32 i = 0; i < listOfNodes.Num() - 1; ++i)
+        {
+            FNodeDistancePair& nodepair = listOfNodes[i];
+            AdwNode* node = nodepair.Node;
+            AdwNode* nextNode;
+
+            FNodeDistancePair& nextNodepair = listOfNodes[i + 1];
+            nextNode = nextNodepair.Node;
+            AdwNodeConnection** connactorptr = node->NODE_CONNECTIONACTORS.Find(nextNode);
+            if (connactorptr)
+            {
+                AdwNodeConnection* connactor = *connactorptr;
+                connactor->DynamicMaterialInstance->SetVectorParameterValue(FName("tileColour"), FVector4d(0.086, 0.729, 0.129, 0.8));
+                control->connectionsMovingUnit.Add(node);
+            }
+        }
+        FRegimentMovementData unitDistList = { Pair.Key,listOfNodes };
+        GAME_movingUnits.Add(unitDistList);
+    }
+    //deselect all units
+    control->player_AllUnits.Empty();
+    control->NodeClickedHUD->SetNodeUnits(control->selectedNode->NODE_REGIMENTS, control);
+}
 void AdirtyWarGameModeBase::startNodeBattles()
 {
     for (TPair<AdwNode*, FnodeInBattleValues>& pair : GAME_nodesInBattle)
@@ -710,7 +898,8 @@ void AdirtyWarGameModeBase::startNodeBattles()
                 secondGroupDmg += calcUnitDmg(unit);
             }
 
-            
+
+            //calc dmg for each group            
             float accdmg = firstGroupDmg / secondGroup.Num();
             for (URegimentType* unit : secondGroup)
             {
@@ -731,9 +920,29 @@ void AdirtyWarGameModeBase::startNodeBattles()
                     }
                 }
             }
+            
+            float accdmg2 = secondGroupDmg / firstGroup.Num();
+            for (URegimentType* unit : firstGroup)
+            {
+                float thisdmg = accdmg2;
+                while (thisdmg > 0 && unit->unitAmount > 0)
+                {
+                    thisdmg -= unit->associatedUnit->healthPoints;
+                    unit->unitAmount -= 1;
+
+                    if (unit->unitAmount <= 0)
+                    {
+                        unit->unitAmount = 0;
+                        pair.Key->NODE_REGIMENTS.Remove(unit);
+                        cleanUpUnitRefs(unit);
+
+                        break;
+                    }
+                }
+            }
 
             AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
-            if (PlayerController->selectedNode == pair.Key)
+            if (PlayerController->selectedNode == pair.Key && PlayerController->NodeClickedHUD)
             {
                 if (PlayerController->NodeBattleHUDSelected)
                 {
@@ -741,15 +950,55 @@ void AdirtyWarGameModeBase::startNodeBattles()
                     PlayerController->NodeBattleHUDSelected = nullptr;
                 }
                 PlayerController->NodeBattleHUDSelected = PlayerController->startNodeBattleHUD(pair.Key);
+                PlayerController->NodeClickedHUD->SetNodeUnits(pair.Key->NODE_REGIMENTS, PlayerController);
             }
 
             pair.Value.timeTillNextPhase = FGameDate(0, 0, 4, 0);
             pair.Value.phase += 1;
             pair.Value.sideOneWinning = 50; //TODO
+
+            if (pair.Value.phase >= 3 || (PlayerController->NodeBattleHUDSelected->dwFactionEntryScroll->GetChildrenCount() < 2))
+            {  
+                if (pair.Value.phase >= 3)
+                {
+                    TArray<URegimentType*> unitsToMove = firstGroup;
+                    if (pair.Value.sideOneWinning >= 50)
+                    {
+                        unitsToMove = secondGroup;
+
+                    }
+                    for (URegimentType* unitvalue : unitsToMove)
+                    {
+                        int32 RandomIndex = FMath::RandRange(0, pair.Key->NODE_CONNECTIONS.Num() - 1);
+                        int32 connint = pair.Key->NODE_CONNECTIONS[RandomIndex];
+                        AdwNode* connNode = *IDNodeMap.Find(connint);
+                        PlayerController->player_AllUnits.Add(unitvalue, pair.Key);
+                        createUnitPath(connNode, PlayerController);
+
+                    }
+                }
+                AdwNode* tempValue = pair.Key;
+                GAME_nodesInBattle.Remove(pair.Key);
+                if (PlayerController->NodeBattleHUDSelected)
+                {
+
+                    PlayerController->NodeBattleHUDSelected->RemoveFromParent();
+                    PlayerController->NodeBattleHUDSelected = nullptr;
+                    
+                }
+                if (PlayerController->selectedNode == tempValue)
+                {
+                    PlayerController->NodeClickedHUD->RemoveFromParent();
+                    PlayerController->NodeClickedHUD = nullptr;
+                    PlayerController->NodeClicked(tempValue);
+                }
+                
+            }
+            
         }
         else
         {
-            decrementFGameDate(pair.Value.timeTillNextPhase);
+            decrementFGameDate(pair.Value.timeTillNextPhase,FGameDate(0,0,1,0));
         }
     }
 }
@@ -770,6 +1019,7 @@ void AdirtyWarGameModeBase::cleanUpUnitRefs(URegimentType* unit)
     }
 
     unit->ConditionalBeginDestroy();
+    
 }
 float AdirtyWarGameModeBase::calcUnitDmg(URegimentType* unit)
 {
@@ -790,10 +1040,11 @@ bool AdirtyWarGameModeBase::ShouldHappen(int percentage)
 void AdirtyWarGameModeBase::GAME_ONHOURLY()
 {
     moveUnits();
-    startNodeBattles();
+    
 }
 void AdirtyWarGameModeBase::GAME_ONDAILY()
 {
+    startNodeBattles();
 }
 void AdirtyWarGameModeBase::GAME_ONWEEKLY()
 {

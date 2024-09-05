@@ -98,15 +98,15 @@ protected:
 
 	void HandleClick();
 
-	TArray<FNodeDistancePair> utilAStarSearch(AdwNode* start, AdwNode* end, AdirtyWarGameModeBase* YourGameMode);
+	
 
-	FGameDate convertDistToGameTime(float dist);
+	
 
 	
 
 	
 
-	float GetDistanceBetweenNodes(AdwNode* Node1, AdwNode* Node2);
+	
 	void Zoom(float Value);
 
 	
