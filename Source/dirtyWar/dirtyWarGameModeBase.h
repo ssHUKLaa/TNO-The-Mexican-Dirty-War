@@ -163,6 +163,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FSlateBrush> unitBrushes;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 USA_milSupport = 80;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 USA_intSupport = 20;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 USA_mediaSupport = 40;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 USA_govnSupport = 50;
+
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
 	

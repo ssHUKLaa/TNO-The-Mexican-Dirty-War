@@ -140,11 +140,17 @@ void UdwNodeNameWidget::openGovnHUDTab()
 {
 
     AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    AdirtyWarGameModeBase* YourGameMode = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
     if (PlayerController->GovnInfoHUD == nullptr) {
         this->openClearAllTopTabs(PlayerController);
         PlayerController->GovnInfoHUD = CreateWidget<UdwGovnInfoHUD>(PlayerController, PlayerController->GovnInfoHUDClass);
+        PlayerController->GovnInfoHUD->updateAllSupportInfo(
+            YourGameMode->USA_milSupport, YourGameMode->USA_intSupport, 
+            YourGameMode->USA_mediaSupport, YourGameMode->USA_govnSupport
+        );
         if (PlayerController->GovnInfoHUD) {
             PlayerController->GovnInfoHUD->AddToPlayerScreen();
+
         }
     }
     else if(PlayerController->GovnInfoHUD != nullptr) {

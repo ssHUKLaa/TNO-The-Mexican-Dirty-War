@@ -439,7 +439,7 @@ void AmouseController::Tick(float DeltaTime)
     GetMousePosition(MousePosition.X, MousePosition.Y);
 
     FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
-    const float EdgeMargin = 50.f;
+    const float EdgeMargin = 10.f;
     const float MaxScrollSpeed = 1.0f;
 
     FVector2D ScrollDirection = FVector2D::ZeroVector;

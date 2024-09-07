@@ -54,6 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void SetFactionControl(TMap<UFactionType*, int32> input);
 
+	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
+	void setIntelText(int32 intel);
+
 	FLinearColor FVector4dToFLinearColor(const FVector4d& Vector);
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")

@@ -80,6 +80,7 @@ void UdwOnNodeClickWidget::SetNodeIntelProg(int32 intel)
 {
     dwNodeIntelProgbar->SetPercent(static_cast<float>(intel) / 100.0f);
     UE_LOG(LogTemp, Warning, TEXT("percent %f"), static_cast<float>(intel) / 100.0f);
+    setIntelText(intel);
 }
 
 void UdwOnNodeClickWidget::SetNodeUnits(TArray<URegimentType*> nodeUntis, AmouseController* ctrl)
@@ -127,7 +128,10 @@ void UdwOnNodeClickWidget::SetFactionControl(TMap<UFactionType*, int32> input)
     dwNodeControlText->SetText(FText::FromString(highestControl));
     PieChartHUD->RefreshPieChart();
 }
-
+void UdwOnNodeClickWidget::setIntelText(int32 intel)
+{
+    dwNodeControlIntel->SetText(FText::FromString("We Have " + FString::FromInt(intel) + " Intel"));
+}
 FLinearColor UdwOnNodeClickWidget::FVector4dToFLinearColor(const FVector4d& Vector)
 {
     return FLinearColor(Vector.X, Vector.Y, Vector.Z, Vector.W);
