@@ -93,28 +93,28 @@ void AdirtyWarGameModeBase::BeginPlay()
 
 
     //SETUP EQUIPMENT
-    UEquipmentType* infantry_eq_1 = NewObject<UEquipmentType>();
-    infantry_eq_1->Name = "Infantry Equipment";
-    infantry_eq_1->Description = "WIP";
-    infantry_eq_1->powerMult = 1;
+    UEquipmentType* infantry_eq = NewObject<UEquipmentType>();
+    infantry_eq->Name = "Infantry Equipment";
+    infantry_eq->Description = "WIP";
+    infantry_eq->powerMult = 1;
 
     UEquipmentType* support_eq = NewObject<UEquipmentType>();
     support_eq->Name = "Support Equipment";
     support_eq->Description = "WIP";
     support_eq->powerMult = 1.15;
 
-    UEquipmentType* motorized_eq_1 = NewObject<UEquipmentType>();
-    motorized_eq_1->Name = "motorized_1";
-    motorized_eq_1->Description = "WIP";
-    motorized_eq_1->powerMult = 1.2;
+    UEquipmentType* motorized_eq = NewObject<UEquipmentType>();
+    motorized_eq->Name = "motorized_1";
+    motorized_eq->Description = "WIP";
+    motorized_eq->powerMult = 1.2;
 
-    GAME_allEquipmentTypes.Add(infantry_eq_1);
+    GAME_allEquipmentTypes.Add(infantry_eq);
     GAME_allEquipmentTypes.Add(support_eq);
-    GAME_allEquipmentTypes.Add(motorized_eq_1);
+    GAME_allEquipmentTypes.Add(motorized_eq);
 
-    GAME_currentEquipment.Add(infantry_eq_1,100);
+    GAME_currentEquipment.Add(infantry_eq,100);
     GAME_currentEquipment.Add(support_eq, 100);
-    GAME_currentEquipment.Add(motorized_eq_1, 100);
+    GAME_currentEquipment.Add(motorized_eq, 100);
     
     //SETUP UNITS
     UUnitType* soldier_unit = NewObject<UUnitType>();
@@ -127,7 +127,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     soldier_unit->baseIntelGeneration = 0.2;
     soldier_unit->basePower = 1;
     soldier_unit->requiredEquipment = { 
-        setUpRequiredEquipments(infantry_eq_1,1), 
+        setUpRequiredEquipments(infantry_eq,1), 
         setUpRequiredEquipments(support_eq,1)};
     soldier_unit->unitEntryIcon = unitBrushes[0];
 
@@ -140,7 +140,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     police_unit->baseTacticsLevel = 0.8;
     police_unit->baseIntelGeneration = 1;
     police_unit->basePower = 0.7;
-    police_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1) };
+    police_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq,1), setUpRequiredEquipments(support_eq,1) };
     police_unit->unitEntryIcon = unitBrushes[1];
 
     UUnitType* dfs_unit = NewObject<UUnitType>();
@@ -152,7 +152,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     dfs_unit->baseTacticsLevel = 0.8;
     dfs_unit->baseIntelGeneration = 1;
     dfs_unit->basePower = 0.7;
-    dfs_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1) };
+    dfs_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq,1), setUpRequiredEquipments(support_eq,1) };
     dfs_unit->unitEntryIcon = unitBrushes[2];
 
     UUnitType* jet_unit = NewObject<UUnitType>();
@@ -164,7 +164,7 @@ void AdirtyWarGameModeBase::BeginPlay()
     jet_unit->baseTacticsLevel = 1.5;
     jet_unit->baseIntelGeneration = 2;
     jet_unit->basePower = 5;
-    jet_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq_1,1), setUpRequiredEquipments(support_eq,1) };
+    jet_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq,1), setUpRequiredEquipments(support_eq,1) };
     jet_unit->unitEntryIcon = unitBrushes[3];
 
     GAME_allUnitTypes.Add(soldier_unit);
@@ -374,6 +374,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                             newReg->Name = "test";
                             newReg->associatedUnit = GAME_allUnitTypes[1];
                             newReg->unitAmount = FMath::RandRange(1,50);
+                            newReg->unitAmountOrig = newReg->unitAmount;
                             newReg->associatedFaction = *govnthingy;
                             newReg->PercentOrganized = 100;
                             newReg->nodesMovable = GAME_allUnitTypes[1]->baseTravelableDistance;
@@ -435,6 +436,7 @@ void AdirtyWarGameModeBase::SpawnNodes(UDataTable* nodeTable)
                 newReg->Name = "test";
                 newReg->associatedUnit = GAME_allUnitTypes[0];
                 newReg->unitAmount = FMath::RandRange(1, 50);
+                newReg->unitAmountOrig = newReg->unitAmount;
                 newReg->associatedFaction = *GAME_allFactions.Find("GPG");
                 newReg->PercentOrganized = 100;
                 newReg->nodesMovable = GAME_allUnitTypes[0]->baseTravelableDistance;
@@ -914,8 +916,7 @@ void AdirtyWarGameModeBase::startNodeBattles()
                         unit->unitAmount = 0;
                         pair.Key->NODE_REGIMENTS.Remove(unit);
                         cleanUpUnitRefs(unit);
-
-
+                        secondGroup.Remove(unit);
                         break;
                     }
                 }
@@ -934,6 +935,7 @@ void AdirtyWarGameModeBase::startNodeBattles()
                     {
                         unit->unitAmount = 0;
                         pair.Key->NODE_REGIMENTS.Remove(unit);
+                        firstGroup.Remove(unit);
                         cleanUpUnitRefs(unit);
 
                         break;
@@ -957,25 +959,22 @@ void AdirtyWarGameModeBase::startNodeBattles()
             pair.Value.phase += 1;
             pair.Value.sideOneWinning = 50; //TODO
 
-            if (pair.Value.phase >= 3 || (PlayerController->NodeBattleHUDSelected->dwFactionEntryScroll->GetChildrenCount() < 2))
+            if (pair.Value.phase >= 3 || (firstGroup.Num()==0 || secondGroup.Num()==0))
             {  
-                if (pair.Value.phase >= 3)
+                TArray<URegimentType*> unitsToMove = firstGroup;
+                if (pair.Value.sideOneWinning >= 50)
                 {
-                    TArray<URegimentType*> unitsToMove = firstGroup;
-                    if (pair.Value.sideOneWinning >= 50)
-                    {
-                        unitsToMove = secondGroup;
+                    unitsToMove = secondGroup;
 
-                    }
-                    for (URegimentType* unitvalue : unitsToMove)
-                    {
-                        int32 RandomIndex = FMath::RandRange(0, pair.Key->NODE_CONNECTIONS.Num() - 1);
-                        int32 connint = pair.Key->NODE_CONNECTIONS[RandomIndex];
-                        AdwNode* connNode = *IDNodeMap.Find(connint);
-                        PlayerController->player_AllUnits.Add(unitvalue, pair.Key);
-                        createUnitPath(connNode, PlayerController);
+                }
+                for (URegimentType* unitvalue : unitsToMove)
+                {
+                    int32 RandomIndex = FMath::RandRange(0, pair.Key->NODE_CONNECTIONS.Num() - 1);
+                    int32 connint = pair.Key->NODE_CONNECTIONS[RandomIndex];
+                    AdwNode* connNode = *IDNodeMap.Find(connint);
+                    PlayerController->player_AllUnits.Add(unitvalue, pair.Key);
+                    createUnitPath(connNode, PlayerController);
 
-                    }
                 }
                 AdwNode* tempValue = pair.Key;
                 GAME_nodesInBattle.Remove(pair.Key);

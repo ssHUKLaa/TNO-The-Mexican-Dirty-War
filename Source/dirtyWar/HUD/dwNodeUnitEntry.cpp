@@ -34,8 +34,7 @@ void UdwNodeUnitEntry::UpdateUnitEntryText()
 void UdwNodeUnitEntry::setUnitNameText(FString nameText,FString unitType, int32 regSize, int32 orgPerc)
 {
 	dwUnitTypeName->SetText(FText::FromString(unitType));
-	int32 nowAvail = round((orgPerc / 100) * regSize);
-	FString temp = FString::FromInt(nowAvail) + "/" + FString::FromInt(regSize);
+	FString temp = FString::FromInt(regSize) + "/" + FString::FromInt(orgPerc);
 	dwUnitEntryRegimentText->SetText(FText::FromString(temp));
 }
 

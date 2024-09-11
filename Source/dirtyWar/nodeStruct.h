@@ -149,6 +149,9 @@ public:
 	int32 unitAmount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 unitAmountOrig;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 PercentOrganized;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

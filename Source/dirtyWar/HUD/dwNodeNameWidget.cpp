@@ -148,6 +148,10 @@ void UdwNodeNameWidget::openGovnHUDTab()
             YourGameMode->USA_milSupport, YourGameMode->USA_intSupport, 
             YourGameMode->USA_mediaSupport, YourGameMode->USA_govnSupport
         );
+        PlayerController->GovnInfoHUD->updateDomesticSupport(
+            YourGameMode->DOM_intSup, YourGameMode->DOM_intMon,
+            YourGameMode->DOM_indSup, YourGameMode->DOM_indMon, YourGameMode->DOM_workSup
+        );
         if (PlayerController->GovnInfoHUD) {
             PlayerController->GovnInfoHUD->AddToPlayerScreen();
 

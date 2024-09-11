@@ -97,15 +97,6 @@ protected:
 	
 
 	void HandleClick();
-
-	
-
-	
-
-	
-
-	
-
 	
 	void Zoom(float Value);
 
@@ -115,9 +106,5 @@ private:
 	AmousePawn* ControlledPawn;
 	void Tick(float DeltaTime) override;
 	AreticleActor* newReticle;
-	
-	
-	
-	
 	
 };

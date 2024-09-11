@@ -172,6 +172,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 USA_govnSupport = 50;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 DOM_intSup = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 DOM_intMon = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 DOM_indSup = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 DOM_indMon = 90;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 DOM_workSup = 100;
+
+
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
 	
