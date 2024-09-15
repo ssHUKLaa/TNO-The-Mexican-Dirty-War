@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include <Components/Button.h>
 #include <Components/TextBlock.h>
+#include <Components/ScrollBox.h>
 #include "dwRecruitUnitsHUD.generated.h"
 
 /**
@@ -37,10 +38,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	UTextBlock* dwRecruitFigText;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UScrollBox* dwUnitRecruitScrBox;
+
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void closeHUD();
 
 	UFUNCTION(BlueprintCallable, Category = "My Widget Functions")
 	void setEquipmentNumbers();
+
+	void setRecruitableUnits();
 	
 };

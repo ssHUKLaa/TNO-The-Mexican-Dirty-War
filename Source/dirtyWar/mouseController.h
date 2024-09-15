@@ -10,6 +10,7 @@
 #include "HUD/dwNodeNameWidget.h"
 #include "HUD/dwOnNodeClickWidget.h"
 #include "HUD/dwNodeUnitEntry.h"
+#include "HUD/dwUnitRecruitEntry.h"
 #include "HUD/dwGovnInfoHUD.h"
 #include "nodeStruct.h"
 #include "dwNodeConnection.h"
@@ -39,6 +40,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UdwWpnsMnuHUD> WpnsInfoHUDClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UdwUnitRecruitEntry> unitRecruitEntryHUDClass;
 
 	UPROPERTY()
 	class UdwNodeNameWidget* PlayerHUD;

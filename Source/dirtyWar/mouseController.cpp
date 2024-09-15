@@ -32,6 +32,8 @@ AmouseController::AmouseController()
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder7(TEXT("/Game/dwHUD/dwNodeBattle.dwNodeBattle_C"));
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder8(TEXT("/Game/dwHUD/dwNodeBattleFacEntryHUD.dwNodeBattleFacEntryHUD_C"));
         static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder9(TEXT("/Game/dwHUD/dwBattleFacUnitHUD.dwBattleFacUnitHUD_C"));
+        static ConstructorHelpers::FObjectFinder<UClass> HUDClassFinder10(TEXT("/Game/dwHUD/dwRecruitUnitEntryHUD.dwRecruitUnitEntryHUD_C"));
+        
         if (HUDClassFinder.Succeeded()) {
             playerHUDClass = HUDClassFinder.Object;
         }
@@ -66,6 +68,10 @@ AmouseController::AmouseController()
         }
         if (HUDClassFinder9.Succeeded()) {
             BattleUnitEntryHUDClass = HUDClassFinder9.Object;
+        }
+        if (HUDClassFinder10.Succeeded())
+        {
+            unitRecruitEntryHUDClass = HUDClassFinder10.Object;
         }
     }
     else {

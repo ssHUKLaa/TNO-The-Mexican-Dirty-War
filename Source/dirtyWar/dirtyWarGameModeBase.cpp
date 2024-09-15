@@ -167,13 +167,20 @@ void AdirtyWarGameModeBase::BeginPlay()
     jet_unit->requiredEquipment = { setUpRequiredEquipments(infantry_eq,1), setUpRequiredEquipments(support_eq,1) };
     jet_unit->unitEntryIcon = unitBrushes[3];
 
+    GAME_longUnitNames.Add(soldier_unit->Name, "Infantry Regiment");
+    GAME_longUnitNames.Add(police_unit->Name, "Federal Judicial Police Posse");
+    GAME_longUnitNames.Add(dfs_unit->Name, "Federal Security Directorates");
+    GAME_longUnitNames.Add(jet_unit->Name, "Fighter Jet Flotilla");
+
     GAME_allUnitTypes.Add(soldier_unit);
     GAME_allUnitTypes.Add(police_unit);
     GAME_allUnitTypes.Add(dfs_unit);
     GAME_allUnitTypes.Add(jet_unit);
 
-
-
+    GAME_recruitableUnitTypes.Add(soldier_unit);
+    GAME_recruitableUnitTypes.Add(police_unit);
+    GAME_recruitableUnitTypes.Add(dfs_unit);
+    GAME_recruitableUnitTypes.Add(jet_unit);
 
 	UDataTable* MyDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/mappedNode.mappedNode"));
 	SpawnNodes(MyDataTable);

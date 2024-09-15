@@ -3,6 +3,9 @@
 
 #include "dwRecruitUnitsHUD.h"
 #include <dirtyWar/mouseController.h>
+#include "dwUnitRecruitEntry.h"
+#include "../nodeStruct.h"
+#include "../mouseController.h"
 #include <dirtyWar/dirtyWarGameModeBase.h>
 
 void UdwRecruitUnitsHUD::NativeConstruct()
@@ -17,6 +20,7 @@ void UdwRecruitUnitsHUD::NativeConstruct()
 
     }
     setEquipmentNumbers();
+    setRecruitableUnits();
 }
 
 void UdwRecruitUnitsHUD::closeHUD()
@@ -36,4 +40,20 @@ void UdwRecruitUnitsHUD::setEquipmentNumbers()
     dwRecruitInfText->SetText(FText::FromString("Infantry Equipment: " + FString::FromInt(infnum)));
     dwRecruitSupText->SetText(FText::FromString("Support Equipment: " + FString::FromInt(supnum)));
     dwRecruitMotText->SetText(FText::FromString("Motorized Equipment: " + FString::FromInt(motnum)));
+}
+void UdwRecruitUnitsHUD::setRecruitableUnits()
+{
+    AdirtyWarGameModeBase* gm = Cast<AdirtyWarGameModeBase>(GetWorld()->GetAuthGameMode());
+    AmouseController* PlayerController = Cast<AmouseController>(GetWorld()->GetFirstPlayerController());
+    for (UUnitType* unit : gm->GAME_recruitableUnitTypes)
+    {
+        UdwUnitRecruitEntry* newUnitEntry = CreateWidget<UdwUnitRecruitEntry>(this, PlayerController->unitRecruitEntryHUDClass);
+        newUnitEntry->dwRecruitUnitName->SetText(FText::FromString(*gm->GAME_longUnitNames.Find(unit->Name)));
+        for (URequiredEquipments* reqEq : unit->requiredEquipment)
+        {
+
+        }
+        dwUnitRecruitScrBox->AddChild(newUnitEntry);
+
+    }
 }

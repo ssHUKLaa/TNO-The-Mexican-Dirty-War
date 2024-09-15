@@ -190,6 +190,9 @@ public:
 
 	bool GAME_UNPAUSED = false;
 	int GAME_SPEED = 5;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FString> GAME_longUnitNames;
 	
 	UFUNCTION(BlueprintCallable, Category = "My Functions")
 	virtual void BeginPlay() override;
@@ -232,6 +235,9 @@ public:
 	TMap<FString,UFactionType*> GAME_allFactions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UUnitType*> GAME_allUnitTypes = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UUnitType*> GAME_recruitableUnitTypes = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UEquipmentType*> GAME_allEquipmentTypes = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
